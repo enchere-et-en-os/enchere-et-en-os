@@ -1,0 +1,20 @@
+{
+  "extends": "enchere/tsconfig/nest.json",
+  "files": [],
+  "include": ["**/*.js", "**/*.json", "**/*.mjs", "**/*.cjs", "**/*.ts"],
+  "exclude": [
+    "./dist/**/*",
+    "node_modules",
+    "tmp",
+    "dist",
+    "**/*spec.ts",
+    "**/*test.ts",
+    "**/*spec.tsx",
+    "**/*test.tsx"
+  ],
+  "compilerOptions": {
+    "rootDir": "./",
+    "outDir": "./dist",
+    "allowJs": true
+  }
+}

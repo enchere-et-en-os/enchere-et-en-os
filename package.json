@@ -1,0 +1,20 @@
+{
+  "name": "my-project",
+  "version": "0.0.0",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "preinstall": "npx only-allow pnpm"
+  },
+  "pnpm": {
+    "overrides": {}
+  },
+  "devDependencies": {
+    "@enchere/tsconfig": "workspace:^",
+    "eslint": "^9.11.1",
+    "typescript": "^5.5.3"
+  },
+  "resolutions": {}
+}
