@@ -1,0 +1,13 @@
+name: "Enchere et en os"
+services:
+  keycloak:
+    container_name: "keycloak"
+    image: quay.io/keycloak/keycloak:26.2.1
+    command: start-dev --import-realm
+    ports:
+      - "8080:8080"
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    volumes:
+      - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
