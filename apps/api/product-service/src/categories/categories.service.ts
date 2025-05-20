@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,17 +12,13 @@ export class CategoriesService {
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
-    const category = this.repository.create({
+    if (!await this.repository.findOneBy({ id: createCategoryDto.parentId }))
+      throw new NotFoundException('Category parent not found');
+
+    return this.repository.save({
       name: createCategoryDto.name,
+      parent: createCategoryDto.parentId ? { id: createCategoryDto.parentId } : null,
     });
-
-    if (createCategoryDto.parentId) {
-      category.parent = await this.repository.findOneBy({
-        id: createCategoryDto.parentId,
-      });
-    }
-
-    return this.repository.save(category);
   }
 
   findAll() {
@@ -37,17 +33,11 @@ export class CategoriesService {
   }
 
   async update(id: string, updateCategoryDto: UpdateCategoryDto) {
-    const category = await this.repository.findOne({ where: { id } });
 
-    if (updateCategoryDto.name) category.name = updateCategoryDto.name;
+    if (!await this.repository.findOneBy({ id: updateCategoryDto.parentId }))
+      throw new NotFoundException('Category parent not found');
 
-    if (updateCategoryDto.parentId) {
-      category.parent = await this.repository.findOneBy({
-        id: updateCategoryDto.parentId,
-      });
-    }
-
-    return this.repository.save(category);
+    return this.repository.update(id, updateCategoryDto);
   }
 
   async remove(id: string) {
