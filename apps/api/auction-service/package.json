@@ -23,11 +23,14 @@
     "@nestjs/common": "*",
     "@nestjs/config": "*",
     "@nestjs/core": "*",
+    "@nestjs/microservices": "*",
     "@nestjs/platform-express": "*",
+    "@nestjs/platform-socket.io": "^11.1.1",
+    "@nestjs/websockets": "^11.1.1",
+    "nats": "*",
     "reflect-metadata": "*",
     "rxjs": "*",
-    "nats": "*",
-    "@nestjs/microservices": "*"
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "@nestjs/cli": "*",
@@ -44,6 +47,7 @@
     "eslint-plugin-prettier": "*",
     "jest": "*",
     "prettier": "*",
+    "socket.io-client": "^4.8.1",
     "source-map-support": "*",
     "supertest": "*",
     "ts-jest": "*",
