@@ -2,7 +2,6 @@
 import Image from "next/image";
 import Keycloak, {KeycloakProfile} from 'keycloak-js';
 import {useEffect, useRef, useState} from "react";
-import * as process from 'node:process';
 
 export default function Home() {
     const keycloak = useRef<Keycloak.KeycloakInstance>(new Keycloak({
