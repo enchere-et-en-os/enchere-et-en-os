@@ -3,7 +3,7 @@ name: CI/CD - Deploy to Production
 on:
   push:
     branches:
-      - main
+      - 22-setup-cicd-github-workflow
 
 jobs:
   lint-test-auction:
