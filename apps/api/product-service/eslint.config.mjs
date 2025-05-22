@@ -1,3 +1,3 @@
-import eslintNestConfig from '@enchere/eslint/nest.js';
+import eslintNestConfig from '@enchere/eslint-config/nest.js';
 
 export default [...eslintNestConfig];

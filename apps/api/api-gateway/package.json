@@ -1,5 +1,5 @@
 {
-  "name": "product-service",
+  "name": "auction-service",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -30,14 +30,13 @@
     "@nestjs/microservices": "*"
   },
   "devDependencies": {
-    "@nestjs/cli": "*",
     "@nestjs/schematics": "*",
     "@nestjs/testing": "*",
-    "@types/express": "*",
+    "@types/express":"*",
     "@types/jest": "*",
     "@types/node": "*",
     "@types/supertest": "*",
-    "@typescript-eslint/eslint-plugin": "*",
+    "@typescript-eslint/eslint-plugin":"*",
     "@typescript-eslint/parser": "*",
     "eslint": "*",
     "eslint-config-prettier": "*",

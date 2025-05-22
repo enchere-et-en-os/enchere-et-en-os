@@ -16,7 +16,7 @@ async function bootstrap() {
       servers: ['nats://localhost:4222'],
     },
   });
-  app.listen().then(() => logger.log("Microservice Product is listening")).catch(() => logger.error("Microservice Product is not listening"));
+  app.listen().then(() => logger.log("API Gateway is listening")).catch(() => logger.error("API Gateway is not listening"));
 }
 
 void bootstrap();
