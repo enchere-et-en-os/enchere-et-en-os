@@ -3,12 +3,13 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Category } from './entities/category.entity';
+
 import { Product } from '../products/entities/product.entity';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
+import { Category } from './entities/category.entity';
 
 @Injectable()
 export class CategoriesService {
@@ -41,12 +42,15 @@ export class CategoriesService {
     if (!(await this.repository.findOneBy({ id: updateCategoryDto.parentId })))
       throw new NotFoundException('Category parent not found');
 
-    return this.repository.update(id, updateCategoryDto);
+    return this.repository.update(id, {
+      name: updateCategoryDto.name,
+      parent: { id: updateCategoryDto.parentId },
+    });
   }
 
   async moveProducts(fromId: string, toId: string) {
     try {
-      return this.productRepository.update(
+      return await this.productRepository.update(
         { category: { id: fromId } },
         { category: { id: toId } },
       );
@@ -58,7 +62,7 @@ export class CategoriesService {
   async remove(id: string) {
     try {
       const category = await this.repository.findOneBy({ id });
-      return this.repository.remove(category);
+      return await this.repository.remove(category);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }

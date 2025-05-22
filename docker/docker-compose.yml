@@ -60,10 +60,6 @@ services:
       POSTGRES_DB: main
     volumes:
       - main-db-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    networks:
-      - app_network
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.2.1
@@ -100,6 +96,3 @@ services:
 volumes:
   main-db-data:
   keycloak-data:
-
-networks:
-  app_network:
