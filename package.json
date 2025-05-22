@@ -6,8 +6,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
-    "format": "pnpm exec prettier --config packages/eslint/prettier.js --write ."
+    "preinstall": "npx only-allow pnpm"
   },
   "pnpm": {
     "overrides": {

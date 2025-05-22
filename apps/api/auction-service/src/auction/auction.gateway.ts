@@ -1,27 +1,35 @@
-import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
+import {
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  OnGatewayInit,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
 interface Bid {
-  userId: string;
   amount: number;
   timestamp: Date;
+  userId: string;
 }
 
 interface AuctionRoom {
-  closeTimeout: NodeJS.Timeout;
-  warningTimeout: NodeJS.Timeout;
   bids: Bid[];
+  closeTimeout: NodeJS.Timeout;
   currentHighestBid: Bid | null;
+  warningTimeout: NodeJS.Timeout;
 }
 
 @WebSocketGateway()
-export class AuctionGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+export class AuctionGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   private readonly logger = new Logger(AuctionGateway.name);
   private activeRooms: Map<string, AuctionRoom> = new Map();
   // private readonly ROOM_TIMEOUT = 3600000;
-  private readonly ROOM_TIMEOUT = 30000;
+  private readonly ROOM_TIMEOUT = 30_000;
   private readonly WARNING_DELAY = 5000;
 
   @WebSocketServer() io: Server;
@@ -38,72 +46,80 @@ export class AuctionGateway implements OnGatewayInit, OnGatewayConnection, OnGat
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage("join-room")
-  joinRoom(client: Socket, room: string) {
+  @SubscribeMessage('join-room')
+  async joinRoom(client: Socket, room: string) {
     this.logger.log(`User ${client.id} joining room: ${room}`);
-    client.join(room);
-    this.io.to(room).emit("new-user", `User ${client.id} connected`);
+    await client.join(room);
+    this.io.to(room).emit('new-user', `User ${client.id} connected`);
 
     if (!this.activeRooms.has(room)) {
       this.startRoomTimers(room);
     }
   }
 
-  @SubscribeMessage("place-bid")
-  placeBid(client: Socket, data: { room: string; amount: number }) {
+  @SubscribeMessage('place-bid')
+  placeBid(client: Socket, data: { amount: number; room: string }) {
     const { room, amount } = data;
     const auctionRoom = this.activeRooms.get(room);
 
     if (!auctionRoom) {
-      client.emit("error", "Room not found");
+      client.emit('error', 'Room not found');
       return;
     }
 
     const newBid: Bid = {
       userId: client.id,
       amount,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
-    if (!auctionRoom.currentHighestBid || amount > auctionRoom.currentHighestBid.amount) {
+    if (
+      !auctionRoom.currentHighestBid ||
+      amount > auctionRoom.currentHighestBid.amount
+    ) {
       auctionRoom.currentHighestBid = newBid;
       auctionRoom.bids.push(newBid);
-      this.io.to(room).emit("new-highest-bid", {
+      this.io.to(room).emit('new-highest-bid', {
         userId: client.id,
         amount,
-        timestamp: newBid.timestamp
+        timestamp: newBid.timestamp,
       });
     } else {
-      client.emit("bid-rejected", "Your bid is not higher than the current highest bid");
+      client.emit(
+        'bid-rejected',
+        'Your bid is not higher than the current highest bid'
+      );
     }
   }
 
-  @SubscribeMessage("close-room")
+  @SubscribeMessage('close-room')
   closeRoom(room: string) {
     this.logger.log(`Closing room: ${room}`);
-    
+
     const auctionRoom = this.activeRooms.get(room);
     if (auctionRoom) {
       const winner = auctionRoom.currentHighestBid;
       if (winner) {
-        this.io.to(room).emit("auction-ended", {
+        this.io.to(room).emit('auction-ended', {
           winner: winner.userId,
           winningAmount: winner.amount,
-          timestamp: winner.timestamp
+          timestamp: winner.timestamp,
         });
       } else {
-        this.io.to(room).emit("auction-ended", { message: "No bids were placed" });
+        this.io
+          .to(room)
+          .emit('auction-ended', { message: 'No bids were placed' });
       }
     }
 
     this.clearRoomTimers(room);
-    this.io.to(room).emit("room-closed", "Room is being closed");
+    this.io.to(room).emit('room-closed', 'Room is being closed');
     this.io.in(room).socketsLeave(room);
   }
 
   private startRoomTimers(room: string) {
     const warningTimeout = setTimeout(() => {
-      this.io.to(room).emit("room-will-close", "Room will close in 2 seconds");
+      this.io.to(room).emit('room-will-close', 'Room will close in 2 seconds');
     }, this.ROOM_TIMEOUT - this.WARNING_DELAY);
 
     const closeTimeout = setTimeout(() => {
@@ -114,7 +130,7 @@ export class AuctionGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       closeTimeout,
       warningTimeout,
       bids: [],
-      currentHighestBid: null
+      currentHighestBid: null,
     });
   }
 

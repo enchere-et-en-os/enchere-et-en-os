@@ -6,9 +6,11 @@ import { AppService } from './app.service';
 import { AuctionGateway } from './auction/auction.gateway';
 
 @Module({
-  imports: [ConfigModule.forRoot({
-    envFilePath: ['.env.dev', '.env'],
-  })],
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: ['.env.dev', '.env'],
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService, AuctionGateway],
 })
