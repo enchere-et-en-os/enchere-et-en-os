@@ -38,6 +38,11 @@ export class CategoriesController {
     return this.categoriesService.update(id, updateCategoryDto);
   }
 
+  @Patch(':fromId/move-products/:toId')
+  moveProducts(@Param('fromId') fromId: string, @Param('toId') toId: string) {
+    return this.categoriesService.moveProducts(fromId, toId);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.categoriesService.remove(id);
