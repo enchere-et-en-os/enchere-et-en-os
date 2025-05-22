@@ -65,11 +65,11 @@ jobs:
           username: ${{ secrets.PROD_USER }}
           key: ${{ secrets.PROD_SSH_KEY }}
           script: |
-            cd /home/enchere/production
-            git pull origin main
+            cd /var/www/enchere-et-en-os
+            git pull
             export POSTGRES_USER=${{ secrets.POSTGRES_USER }}
             export POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
             export KEYCLOAK_ADMIN=${{ secrets.KEYCLOAK_ADMIN }}
             export KEYCLOAK_ADMIN_PASSWORD=${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
-            docker compose -f docker-compose.prod.yml down
-            docker compose -f docker-compose.prod.yml up -d --build
+            docker compose -f docker/docker-compose.prod.yml down
+            docker compose -f docker/docker-compose.prod.yml up -d --build
