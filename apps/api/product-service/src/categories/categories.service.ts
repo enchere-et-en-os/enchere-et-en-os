@@ -14,12 +14,13 @@ import { Category } from './entities/category.entity';
 @Injectable()
 export class CategoriesService {
   constructor(
-    @InjectRepository(Category) private repository: Repository<Category>,
+    @InjectRepository(Category)
+    private categoryRepository: Repository<Category>,
     @InjectRepository(Product) private productRepository: Repository<Product>,
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
-    return this.repository.save({
+    return this.categoryRepository.save({
       name: createCategoryDto.name,
       parent: createCategoryDto.parentId
         ? { id: createCategoryDto.parentId }
@@ -28,21 +29,25 @@ export class CategoriesService {
   }
 
   findAll() {
-    return this.repository.find({ relations: ['parent', 'children'] });
+    return this.categoryRepository.find({ relations: ['parent', 'children'] });
   }
 
   findOne(id: string) {
-    return this.repository.findOne({
+    return this.categoryRepository.findOne({
       where: { id },
       relations: ['parent', 'children'],
     });
   }
 
-  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
-    if (!(await this.repository.findOneBy({ id: updateCategoryDto.parentId })))
+  async update(updateCategoryDto: UpdateCategoryDto) {
+    if (
+      !(await this.categoryRepository.findOneBy({
+        id: updateCategoryDto.parentId,
+      }))
+    )
       throw new NotFoundException('Category parent not found');
 
-    return this.repository.update(id, {
+    return this.categoryRepository.update(updateCategoryDto.id, {
       name: updateCategoryDto.name,
       parent: { id: updateCategoryDto.parentId },
     });
@@ -60,8 +65,8 @@ export class CategoriesService {
   }
 
   async remove(id: string) {
-    const category = await this.repository.findOneBy({ id });
+    const category = await this.categoryRepository.findOneBy({ id });
     if (!category) throw new NotFoundException('Category not found');
-    return this.repository.remove(category);
+    return this.categoryRepository.remove(category);
   }
 }

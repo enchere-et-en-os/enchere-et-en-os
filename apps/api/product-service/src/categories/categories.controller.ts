@@ -5,7 +5,7 @@ import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
-@Controller('categories')
+@Controller()
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
@@ -27,15 +27,9 @@ export class CategoriesController {
   @MessagePattern('category.update')
   update(
     @Payload()
-    {
-      id,
-      updateCategoryDto,
-    }: {
-      id: string;
-      updateCategoryDto: UpdateCategoryDto;
-    },
+    updateCategoryDto: UpdateCategoryDto,
   ) {
-    return this.categoriesService.update(id, updateCategoryDto);
+    return this.categoriesService.update(updateCategoryDto);
   }
 
   @MessagePattern('category.moveProducts')
