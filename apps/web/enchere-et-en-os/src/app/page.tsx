@@ -1,7 +1,7 @@
 'use client';
 import Image from "next/image";
 import Keycloak, {KeycloakProfile} from 'keycloak-js';
-import {use, useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 
 export default function Home() {
     const keycloak = useRef<Keycloak.KeycloakInstance>(new Keycloak({
@@ -12,11 +12,11 @@ export default function Home() {
     const [user, setUser] = useState<KeycloakProfile | null>(null);
 
     useEffect(() => {
-        keycloak.current.init({onLoad: 'login-required', checkLoginIframe: false}).then(authenticated => {
+        keycloak.current.init({onLoad: 'login-required', checkLoginIframe: false}).then(() => {
             keycloak.current.loadUserProfile().then((user) => {
                 setUser(user);
             });
-        }).catch((e) => {
+        }).catch(() => {
             console.log('Échec de l\'initialisation de Keycloak');
         });
     }, []);
