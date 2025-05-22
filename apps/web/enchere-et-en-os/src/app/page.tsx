@@ -2,10 +2,11 @@
 import Image from "next/image";
 import Keycloak, {KeycloakProfile} from 'keycloak-js';
 import {useEffect, useRef, useState} from "react";
+import * as process from 'node:process';
 
 export default function Home() {
     const keycloak = useRef<Keycloak.KeycloakInstance>(new Keycloak({
-        url: 'http://localhost:8080/',
+        url: process.env.NEXT_PUBLIC_KEYCLOAK_URL ?? 'http://localhost:8080/',
         realm: 'enchere',
         clientId: 'front'
     }));
