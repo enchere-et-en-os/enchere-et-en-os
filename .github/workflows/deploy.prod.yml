@@ -67,13 +67,6 @@ jobs:
           script: |
             cd /var/www/enchere-et-en-os
             git pull
-            
-            cat <<EOF > .env.prod
-            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-            KEYCLOAK_ADMIN=${{ secrets.KEYCLOAK_ADMIN }}
-            KEYCLOAK_ADMIN_PASSWORD=${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
-            EOF
-
-            docker compose --env-file .env.prod -f docker/docker-compose.prod.yml down
-            docker compose --env-file .env.prod -f docker/docker-compose.prod.yml up -d --build
+            cd docker
+            docker compose --env-file .env.prod -f docker-compose.prod.yml down
+            docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
