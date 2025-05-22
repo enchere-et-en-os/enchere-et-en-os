@@ -13,43 +13,45 @@ import unusedImports from './configs/unused-imports.js';
 import jsonConfig from './configs/json.js';
 import stylisticConfig from './configs/stylistic.js';
 import perfectionistConfig from './configs/perfectionist.js';
+import prettierConfig from "./configs/prettier.js";
 
 export default tseslint.config(
-  ...jsonConfig,
-  ...baseConfig,
-  ...typescriptConfig,
-  ...jsdocConfig,
-  ...sonarjsConfig,
-  ...unicornConfig,
-  ...promiseConfig,
-  ...unusedImports,
-  ...stylisticConfig,
-  ...perfectionistConfig,
-  {
-    languageOptions: {
-      globals: {
-        ...globals.node,
-      },
+    ...jsonConfig,
+    ...baseConfig,
+    ...typescriptConfig,
+    ...jsdocConfig,
+    ...sonarjsConfig,
+    ...unicornConfig,
+    ...promiseConfig,
+    ...unusedImports,
+    ...stylisticConfig,
+    ...perfectionistConfig,
+    ...prettierConfig,
+    {
+        languageOptions: {
+            globals: {
+                ...globals.node,
+            },
 
-      ecmaVersion: 5,
-      sourceType: 'commonjs',
+            ecmaVersion: 5,
+            sourceType: 'commonjs',
 
-      parserOptions: {
-        project: true,
-      },
+            parserOptions: {
+                project: true,
+            },
+        },
+
+        rules: {
+            '@typescript-eslint/no-invalid-this': 'off', // why?
+            '@typescript-eslint/quotes': 'off', // why?
+            'sonarjs/function-return-type': 'off',
+        },
+        ignores: [
+            '**/dist/',
+            '**/build/',
+            '**/logs/',
+            'tsconfig.**',
+            '**/eslint.config.mjs',
+        ],
     },
-
-    rules: {
-      '@typescript-eslint/no-invalid-this': 'off', // why?
-      '@typescript-eslint/quotes': 'off', // why?
-      'sonarjs/function-return-type': 'off',
-    },
-    ignores: [
-      '**/dist/',
-      '**/build/',
-      '**/logs/',
-      'tsconfig.**',
-      '**/eslint.config.mjs',
-    ],
-  },
 );
