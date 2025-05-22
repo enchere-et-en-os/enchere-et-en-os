@@ -5,7 +5,7 @@ import {useEffect, useRef, useState} from "react";
 
 export default function Home() {
     const keycloak = useRef<Keycloak.KeycloakInstance>(new Keycloak({
-        url: process.env.NEXT_PUBLIC_KEYCLOAK_URL ?? 'http://localhost:8080/',
+        url: process.env.NEXT_PUBLIC_KEYCLOAK_URL ?? 'https://auth.enchere.mdlh.fr/',
         realm: 'enchere',
         clientId: 'front'
     }));
