@@ -1,6 +1,25 @@
 version: '3.8'
 
 services:
+  api-gateway-api:
+    build:
+      context: ../apps/api/api-gateway
+      dockerfile: ../../../docker/Dockerfile.api
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@main-db:5432/main
+      REDIS_HOST: redis
+      NATS_URL: nats://nats:4222
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gateway.rule=Host(`api.enchere.mdlh.fr`)"
+      - "traefik.http.routers.gateway.entrypoints=websecure"
+      - "traefik.http.routers.gateway.tls.certresolver=myresolver"
+      - "traefik.http.services.gateway.loadbalancer.server.port=8000"
+    depends_on:
+      - main-db
+      - redis
+      - nats
+
   auction-api:
     build:
       context: ../apps/api/auction-service
@@ -9,12 +28,6 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@main-db:5432/main
       REDIS_HOST: redis
       NATS_URL: nats://nats:4222
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.auction.rule=Host(`api.enchere.mdlh.fr`) && PathPrefix(`/auction`)"
-      - "traefik.http.routers.auction.entrypoints=websecure"
-      - "traefik.http.routers.auction.tls.certresolver=myresolver"
-      - "traefik.http.services.auction.loadbalancer.server.port=3000"
     depends_on:
       - main-db
       - redis
@@ -28,12 +41,6 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@main-db:5432/main
       REDIS_HOST: redis
       NATS_URL: nats://nats:4222
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.product.rule=Host(`api.enchere.mdlh.fr`) && PathPrefix(`/product`)"
-      - "traefik.http.routers.product.entrypoints=websecure"
-      - "traefik.http.routers.product.tls.certresolver=myresolver"
-      - "traefik.http.services.product.loadbalancer.server.port=3000"
     depends_on:
       - main-db
       - redis
@@ -44,8 +51,7 @@ services:
       context: ../apps/web/enchere-et-en-os
       dockerfile: ../../../docker/Dockerfile.web
     environment:
-      NEXT_PUBLIC_API_AUCTION_URL: https://api.enchere.mdlh.fr/auction
-      NEXT_PUBLIC_API_PRODUCT_URL: https://api.enchere.mdlh.fr/product
+      NEXT_PUBLIC_API_GATEWAY_URL: https://api.enchere.mdlh.fr
       NEXT_PUBLIC_KEYCLOAK_URL: https://auth.enchere.mdlh.fr/
       NEXT_PUBLIC_KEYCLOAK_REALM: enchere
       NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: front
@@ -57,8 +63,7 @@ services:
       - "traefik.http.routers.web.tls.certresolver=myresolver"
       - "traefik.http.services.web.loadbalancer.server.port=3000"
     depends_on:
-      - auction-api
-      - product-api
+      - api-gateway-api
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.2.1
