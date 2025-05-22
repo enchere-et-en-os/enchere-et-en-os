@@ -60,11 +60,8 @@ export class CategoriesService {
   }
 
   async remove(id: string) {
-    try {
-      const category = await this.repository.findOneBy({ id });
-      return await this.repository.remove(category);
-    } catch (error) {
-      throw new InternalServerErrorException(error.message);
-    }
+    const category = await this.repository.findOneBy({ id });
+    if (!category) throw new NotFoundException('Category not found');
+    return this.repository.remove(category);
   }
 }
