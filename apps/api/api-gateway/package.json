@@ -30,6 +30,7 @@
     "@nestjs/microservices": "*"
   },
   "devDependencies": {
+    "@nestjs/cli": "*",
     "@nestjs/schematics": "*",
     "@nestjs/testing": "*",
     "@types/express":"*",
