@@ -1,8 +1,25 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import {Logger} from "@nestjs/common";
+import {NestFactory} from '@nestjs/core';
+import {Transport} from "@nestjs/microservices";
 
+import {AppModule} from './app.module';
+
+const logger = new Logger();
+
+/**
+ *
+ */
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+    logger.log("process.env.NATS_URL", process.env.NATS_URL, "Bootstrap");
+    const app = await NestFactory.createMicroservice(AppModule, {
+        transport: Transport.NATS,
+        options: {
+            servers: [process.env.NATS_URL ?? 'nats://localhost:4222'],
+        },
+    });
+    app.listen()
+        .then(() => logger.log("Microservice Auction is listening"))
+        .catch((error) => logger.error("Microservice Auction is not listening ", error, "Bootstrap"));
 }
-bootstrap();
+
+void bootstrap();

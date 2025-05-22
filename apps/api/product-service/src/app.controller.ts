@@ -1,12 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import {Controller, Logger} from '@nestjs/common';
+import {MessagePattern} from "@nestjs/microservices";
+import {delay, of} from "rxjs";
+
+const logger = new Logger();
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
+    @MessagePattern({cmd: "ping"})
+    ping(_: never) {
+        logger.log("ping");
+        return of("pong").pipe(delay(1000));
+    }
 }

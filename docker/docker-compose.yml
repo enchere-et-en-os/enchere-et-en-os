@@ -1,4 +1,20 @@
+name: "Enchere-Et-En-Os"
 services:
+  api-gateway-api:
+    build:
+      context: ../apps/api/api-gateway
+      dockerfile: ../../../docker/Dockerfile.api
+    environment:
+      DATABASE_URL: postgres://user:password@main-db:5432/main
+      REDIS_HOST: redis
+      NATS_URL: nats://nats:4222
+    depends_on:
+      - main-db
+      - redis
+      - nats
+    ports:
+      - "8000:8000"
+
   auction-api:
     build:
       context: ../apps/api/auction-service
@@ -11,8 +27,6 @@ services:
       - main-db
       - redis
       - nats
-    ports:
-      - "4001:3000"
 
   product-api:
     build:
@@ -26,21 +40,12 @@ services:
       - main-db
       - redis
       - nats
-    ports:
-      - "4002:3000"
-
   web:
     build:
       context: ../apps/web/enchere-et-en-os
       dockerfile: ../../../docker/Dockerfile.web
-    environment:
-      API_AUCTION_URL: http://localhost:4001
-      API_PRODUCT_URL: http://localhost:4002
     ports:
       - "3000:3000"
-    depends_on:
-      - auction-api
-      - product-api
 
   redis:
     image: redis:7
