@@ -10,12 +10,15 @@ export class AppService {
 
   pingServices() {
     const startTs = Date.now();
-    const pattern = { cmd: 'ping' };
-    const payload = {};
     return this.productService
-      .send<string>(pattern, payload)
+      .send<string>('ping', 'ping')
       .pipe(
         map((message: string) => ({ message, duration: Date.now() - startTs }))
       );
+  }
+
+  createUser(body: never) {
+    console.log(body);
+    return this.productService.send<string>('user.create', body);
   }
 }
