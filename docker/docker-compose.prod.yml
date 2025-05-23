@@ -74,6 +74,9 @@ services:
       KC_DB_USERNAME: ${POSTGRES_USER}
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
       KC_HTTP_ENABLED: true
+      KC_PROXY: edge
+      KC_HOSTNAME_ADMIN: https://auth.enchere.mdlh.fr
+      KC_HOSTNAME_URL: https://auth.enchere.mdlh.fr
       KC_HOSTNAME: auth.enchere.mdlh.fr
       KC_HOSTNAME_STRICT: false
     labels:
