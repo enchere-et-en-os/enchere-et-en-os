@@ -23,11 +23,15 @@
     "@nestjs/common": "*",
     "@nestjs/config": "*",
     "@nestjs/core": "*",
+    "@nestjs/mapped-types": "*",
+    "@nestjs/microservices": "*",
     "@nestjs/platform-express": "*",
+    "@nestjs/typeorm": "*",
+    "class-validator": "*",
+    "nats": "2.29.3",
     "reflect-metadata": "*",
     "rxjs": "*",
-    "nats": "*",
-    "@nestjs/microservices": "*"
+    "typeorm": "*"
   },
   "devDependencies": {
     "@nestjs/cli": "*",
