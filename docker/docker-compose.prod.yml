@@ -76,6 +76,8 @@ services:
       KC_DB_USERNAME: ${POSTGRES_USER}
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
       KC_HTTP_ENABLED: true
+      KC_HOSTNAME: auth.enchere.mdlh.fr
+      KC_HOSTNAME_STRICT: false
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.keycloak.rule=Host(`auth.enchere.mdlh.fr`)"
