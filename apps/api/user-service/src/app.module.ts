@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { CategoriesModule } from './categories/categories.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProductsModule } from './products/products.module';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { AppController } from './app.controller';
+import { UserModule } from './User/user.module';
 
 @Module({
   imports: [
@@ -21,10 +20,9 @@ import { ConfigModule } from '@nestjs/config';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
-    CategoriesModule,
-    ProductsModule,
+    UserModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [],
 })
 export class AppModule {}

@@ -40,6 +40,7 @@ services:
       - main-db
       - redis
       - nats
+
   web:
     build:
       context: ../apps/web/enchere-et-en-os
@@ -60,6 +61,8 @@ services:
       POSTGRES_DB: main
     volumes:
       - main-db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.2.1
