@@ -6,7 +6,10 @@
     "node": ">=20"
   },
   "scripts": {
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "test:all": "pnpm -r run test",
+    "lint:all": "pnpm -r run lint",
+    "verify": "pnpm run lint:all && pnpm run test:all"
   },
   "pnpm": {
     "overrides": {
