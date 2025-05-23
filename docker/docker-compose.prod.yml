@@ -65,20 +65,19 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.2.1
-    command: start --import-realm
+    command:
+      - start
+      - --hostname=https://auth.enchere.mdlh.fr
+      - --hostname-admin-url=https://auth.enchere.mdlh.fr
+      - --import-realm
+      - --proxy=edge
     environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
-      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
-      KC_DB_USERNAME: ${POSTGRES_USER}
-      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
-      KC_HTTP_ENABLED: true
-      KC_PROXY: edge
-      KC_HOSTNAME_ADMIN: https://auth.enchere.mdlh.fr
-      KC_HOSTNAME_URL: https://auth.enchere.mdlh.fr
-      KC_HOSTNAME: auth.enchere.mdlh.fr
-      KC_HOSTNAME_STRICT: false
+        KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
+        KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+        KC_DB: postgres
+        KC_DB_URL: jdbc:postgresql://keycloak-db:5433/keycloak
+        KC_DB_USERNAME: ${POSTGRES_USER}
+        KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.keycloak.rule=Host(`auth.enchere.mdlh.fr`)"
@@ -99,7 +98,7 @@ services:
     volumes:
       - keycloak-data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5433:5433"
 
   main-db:
     image: postgres:17.5
