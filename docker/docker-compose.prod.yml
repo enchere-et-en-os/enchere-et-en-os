@@ -68,7 +68,7 @@ services:
     command:
       - start
       - --hostname=https://auth.enchere.mdlh.fr
-      - --hostname-admin-url=https://auth.enchere.mdlh.fr
+      - --hostname-admin=https://auth.enchere.mdlh.fr
       - --import-realm
       - --proxy=edge
     environment:
