@@ -18,6 +18,6 @@ describe('AppController', () => {
   describe('root', () => {
     it('should intialize', () => {
       expect(appController).toBeDefined();
-    })
+    });
   });
 });

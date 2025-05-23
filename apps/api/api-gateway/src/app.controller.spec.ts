@@ -1,34 +1,35 @@
-import {ClientsModule, Transport} from "@nestjs/microservices";
-import {Test, type TestingModule} from '@nestjs/testing';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { Test, type TestingModule } from '@nestjs/testing';
 
-import {AppController} from './app.controller';
-import {AppService} from './app.service';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 describe('AppController', () => {
-    let appController: AppController;
+  let appController: AppController;
 
-    beforeEach(async () => {
-        const app: TestingModule = await Test.createTestingModule({
-            controllers: [AppController],
-            providers: [AppService],
-            imports: [ClientsModule.register([
-                {
-                    name: 'NATS_SERVICES',
-                    transport: Transport.NATS,
-                    options: {
-                        servers: ['nats://localhost:4222'],
-                    },
-                },
-            ]),
-            ]
-        }).compile();
+  beforeEach(async () => {
+    const app: TestingModule = await Test.createTestingModule({
+      controllers: [AppController],
+      providers: [AppService],
+      imports: [
+        ClientsModule.register([
+          {
+            name: 'NATS_SERVICES',
+            transport: Transport.NATS,
+            options: {
+              servers: ['nats://localhost:4222'],
+            },
+          },
+        ]),
+      ],
+    }).compile();
 
-        appController = app.get<AppController>(AppController);
+    appController = app.get<AppController>(AppController);
+  });
+
+  describe('root', () => {
+    it('should intialize', () => {
+      expect(appController).toBeDefined();
     });
-
-    describe('root', () => {
-        it('should intialize', () => {
-            expect(appController).toBeDefined();
-        })
-    });
+  });
 });
