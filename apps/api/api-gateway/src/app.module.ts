@@ -1,24 +1,18 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuctionModule } from './auction/auction.module';
+import { NatsClientModule } from './nats-client.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: ['../.env.local'],
     }),
-    ClientsModule.register([
-      {
-        name: 'NATS_SERVICES',
-        transport: Transport.NATS,
-        options: {
-          servers: [process.env.NATS_URL ?? 'nats://localhost:4222'],
-        },
-      },
-    ]),
+    NatsClientModule,
+    AuctionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

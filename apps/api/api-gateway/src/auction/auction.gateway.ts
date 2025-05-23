@@ -1,4 +1,5 @@
-import { Logger } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -31,6 +32,8 @@ export class AuctionGateway
   // private readonly ROOM_TIMEOUT = 3600000;
   private readonly ROOM_TIMEOUT = 30_000;
   private readonly WARNING_DELAY = 5000;
+
+  constructor(@Inject('NATS_SERVICES') private client: ClientProxy) {}
 
   @WebSocketServer() io: Server;
 
@@ -90,6 +93,15 @@ export class AuctionGateway
         'Your bid is not higher than the current highest bid'
       );
     }
+  }
+
+  @SubscribeMessage('ping')
+  sendPing() {
+    this.client.emit('ping', {});
+  }
+
+  handleAuctionPong() {
+    this.io.emit('auction-pong', 'pong');
   }
 
   @SubscribeMessage('close-room')
