@@ -6,8 +6,8 @@ const logger = new Logger();
 
 @Controller()
 export class AppController {
-  @MessagePattern({ cmd: 'ping' })
-  ping(_: never) {
+  @MessagePattern('ping')
+  ping() {
     logger.log('ping');
     return of('pong').pipe(delay(1000));
   }

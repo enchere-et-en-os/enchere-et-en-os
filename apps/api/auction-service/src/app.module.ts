@@ -8,7 +8,7 @@ import { AuctionGateway } from './auction/auction.gateway';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ['.env.dev', '.env'],
+      envFilePath: ['../.env.local'],
     }),
   ],
   controllers: [AppController],
