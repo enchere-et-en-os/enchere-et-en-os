@@ -126,18 +126,18 @@ services:
   traefik:
     image: traefik:v3.0
     command:
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.address=:8080"
+      - "--entrypoints.websecure.address=:8443"
       - "--providers.docker=true"
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.myresolver.acme.email=admin@enchere.mdlh.fr"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
       - "--api.dashboard=true"
-      - "--api.insecure=false"  # sécurise l'accès au dashboard (pas accessible via localhost:8080)
+      - "--api.insecure=false"
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:8080"
+      - "8443:8443"
       - "8081:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
