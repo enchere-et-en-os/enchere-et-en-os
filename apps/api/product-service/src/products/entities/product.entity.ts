@@ -1,10 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Category } from "../../categories/entities/category.entity";
+import { Category } from '../../categories/entities/category.entity';
 
 @Entity()
 export class Product {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
@@ -13,10 +13,8 @@ export class Product {
   @Column({ nullable: true })
   description: string;
 
-  @Column("text", { array: true, nullable: true })
+  @Column('text', { array: true, nullable: true })
   images: string[];
-
-  user_id: string;
 
   @ManyToOne(() => Category, (category) => category.products)
   category: Category;
