@@ -16,7 +16,7 @@ export class CategoriesService {
   constructor(
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
-    @InjectRepository(Product) private productRepository: Repository<Product>,
+    @InjectRepository(Product) private productRepository: Repository<Product>
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
@@ -57,7 +57,7 @@ export class CategoriesService {
     try {
       return await this.productRepository.update(
         { category: { id: fromId } },
-        { category: { id: toId } },
+        { category: { id: toId } }
       );
     } catch (error) {
       throw new InternalServerErrorException(error.message);
