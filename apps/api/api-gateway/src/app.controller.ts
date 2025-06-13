@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { AuthGuard } from 'nest-keycloak-connect';
 
 import { AppService } from './app.service';
 
@@ -7,6 +8,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get('/ping-services')
+  @UseGuards(AuthGuard)
   pingServices() {
     return this.appService.pingServices();
   }
