@@ -17,7 +17,7 @@ export class AuctionService {
     return res;
   }
 
-  async placeBid(data: { amount: number; room: string }) {
+  async placeBid(data: { amount: number; clientId: string; room: string }) {
     const { room } = data;
     await this.cacheManager.set(`bid:${room}`, data, 0);
     return data;

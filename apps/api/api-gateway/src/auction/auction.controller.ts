@@ -23,11 +23,12 @@ export class AuctionController {
 
   @Get('auction')
   getAuction(@Body() data: CreateAuctionDto) {
+    console.log('room', data);
     return this.client.send('get-auction', data);
   }
 
   @EventPattern('bid')
-  handleBidResponse(data: { amount: number; room: string }) {
+  handleBidResponse(data: { amount: number; clientId: string; room: string }) {
     this.gateway.handleBidResponse(data);
   }
 }

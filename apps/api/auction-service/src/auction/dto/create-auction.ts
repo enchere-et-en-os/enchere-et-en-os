@@ -3,6 +3,10 @@ import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 export class CreateAuctionDto {
   @IsString()
   @IsNotEmpty()
+  auctionId: string;
+
+  @IsString()
+  @IsNotEmpty()
   auctionName: string;
 
   @IsString()

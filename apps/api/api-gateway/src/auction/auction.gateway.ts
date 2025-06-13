@@ -64,11 +64,13 @@ export class AuctionGateway
       await this.cacheManager.set(`auction:${auctionId}:room`, roomId, 0);
     }
 
-    await client.join(roomId);
-    this.io.to(roomId).emit('new-user', `User ${client.id} connected`);
+    await client.join(roomId as string);
+    this.io
+      .to(roomId as string[] | string)
+      .emit('new-user', `User ${client.id} connected`);
 
-    if (!this.activeRooms.has(roomId)) {
-      this.startRoomTimers(roomId);
+    if (!this.activeRooms.has(roomId as string)) {
+      this.startRoomTimers(roomId as string);
     }
   }
 
@@ -89,31 +91,7 @@ export class AuctionGateway
       return;
     }
 
-    this.client.emit('place-bid', { amount, room: roomId });
-
-    const newBid: Bid = {
-      userId: client.id,
-      amount,
-      timestamp: new Date(),
-    };
-
-    if (
-      !auctionRoom.currentHighestBid ||
-      amount > auctionRoom.currentHighestBid.amount
-    ) {
-      auctionRoom.currentHighestBid = newBid;
-      auctionRoom.bids.push(newBid);
-      this.io.to(roomId as string).emit('new-highest-bid', {
-        userId: client.id,
-        amount,
-        timestamp: newBid.timestamp,
-      });
-    } else {
-      client.emit(
-        'bid-rejected',
-        'Your bid is not higher than the current highest bid'
-      );
-    }
+    this.client.emit('place-bid', { amount, room: roomId, client });
   }
 
   handleBidResponse(data: { amount: number; room: string }) {

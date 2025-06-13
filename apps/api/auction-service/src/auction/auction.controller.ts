@@ -32,7 +32,9 @@ export class AuctionController {
   }
 
   @EventPattern('place-bid')
-  async placeBid(@Payload() data: { amount: number; room: string }) {
+  async placeBid(
+    @Payload() data: { amount: number; clientId: string; room: string }
+  ) {
     const result = await this.auctionService.placeBid(data);
     this.client.emit('bid', { amount: result.amount, room: result.room });
   }
