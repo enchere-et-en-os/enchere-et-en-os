@@ -30,6 +30,7 @@
     "rxjs": "*"
   },
   "devDependencies": {
+    "@nestjs/cache-manager": "*",
     "@nestjs/cli": "*",
     "@nestjs/schematics": "*",
     "@nestjs/testing": "*",
@@ -39,6 +40,9 @@
     "@types/supertest": "*",
     "@typescript-eslint/eslint-plugin": "*",
     "@typescript-eslint/parser": "*",
+    "cache-manager": "*",
+    "class-transformer": "*",
+    "class-validator": "*",
     "eslint": "*",
     "eslint-config-prettier": "*",
     "eslint-plugin-prettier": "*",
