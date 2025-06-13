@@ -27,10 +27,10 @@ import { AppService } from './app.service';
       },
     ]),
     KeycloakConnectModule.register({
-      authServerUrl: 'http://localhost:8080', // might be http://localhost:8080/auth for older keycloak versions
-      realm: 'enchere',
-      clientId: 'front',
-      secret: 'uHyTIrI3y2c2UtuN09zrI7mzJSzfLJRH',
+      authServerUrl: process.env.KC_HOST,
+      realm: process.env.KC_REALM,
+      clientId: process.env.KC_CLIENT_ID,
+      secret: process.env.KC_CLIENT_SECRET,
       policyEnforcement: PolicyEnforcementMode.PERMISSIVE, // optional
       tokenValidation: TokenValidation.ONLINE, // optional
     }),

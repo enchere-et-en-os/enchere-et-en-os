@@ -9,9 +9,9 @@ import {useEffect, useRef, useState} from "react";
 
 export default function LandingPage() {
     const keycloak = useRef<Keycloak>(new Keycloak({
-        url: process.env.NEXT_PUBLIC_KEYCLOAK_URL ?? 'https://auth.enchere.mdlh.fr/',
-        realm: 'enchere',
-        clientId: 'front'
+        url: process.env.NEXT_PUBLIC_KC_HOST!,
+        realm: process.env.NEXT_PUBLIC_KC_REALM!,
+        clientId: process.env.NEXT_PUBLIC_KC_CLIENT_ID!
     }));
 
     const [user, setUser] = useState<KeycloakProfile | null>(null);
