@@ -22,12 +22,14 @@ export class AuctionController {
   }
 
   @MessagePattern('create-auction')
-  createAuction(@Payload() data: CreateAuctionDto) {
+  async createAuction(@Payload() data: CreateAuctionDto) {
+    console.log(data);
     return this.auctionService.createAuction(data);
   }
 
   @MessagePattern('get-auction')
-  getAuction(@Payload() data: CreateAuctionDto) {
+  async getAuction(@Payload() data: CreateAuctionDto) {
+    console.log('passed');
     return this.auctionService.getAuction(data);
   }
 
@@ -36,6 +38,10 @@ export class AuctionController {
     @Payload() data: { amount: number; clientId: string; room: string }
   ) {
     const result = await this.auctionService.placeBid(data);
-    this.client.emit('bid', { amount: result.amount, room: result.room });
+    this.client.emit('bid', {
+      amount: result.amount,
+      clientId: result.clientId,
+      room: result.room,
+    });
   }
 }

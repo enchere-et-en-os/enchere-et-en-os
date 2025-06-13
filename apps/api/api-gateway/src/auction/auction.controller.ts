@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
 import { ClientProxy, EventPattern } from '@nestjs/microservices';
 
 import { AuctionGateway } from './auction.gateway';
@@ -21,10 +21,9 @@ export class AuctionController {
     return this.client.send('create-auction', data);
   }
 
-  @Get('auction')
-  getAuction(@Body() data: CreateAuctionDto) {
-    console.log('room', data);
-    return this.client.send('get-auction', data);
+  @Get('auction/:id')
+  getAuction(@Param() parameters) {
+    return this.client.send('get-auction', parameters);
   }
 
   @EventPattern('bid')

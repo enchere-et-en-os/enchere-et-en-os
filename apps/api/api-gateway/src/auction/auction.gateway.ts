@@ -9,6 +9,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { firstValueFrom } from 'rxjs';
 import { Server, Socket } from 'socket.io';
 
 interface Bid {
@@ -91,7 +92,21 @@ export class AuctionGateway
       return;
     }
 
-    this.client.emit('place-bid', { amount, room: roomId, client });
+    try {
+      const result = await firstValueFrom(
+        this.client.send('place-bid', {
+          amount,
+          room: roomId,
+          clientId: client.id,
+        })
+      );
+      if (result) {
+        this.handleBidResponse(result);
+      }
+    } catch (error) {
+      client.emit('error', 'Failed to place bid');
+      this.logger.error('Error placing bid:', error);
+    }
   }
 
   handleBidResponse(data: { amount: number; room: string }) {

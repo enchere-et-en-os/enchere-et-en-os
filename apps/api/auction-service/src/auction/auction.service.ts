@@ -8,12 +8,13 @@ export class AuctionService {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
   async createAuction(data: CreateAuctionDto) {
-    await this.cacheManager.set(`key:${data.auctionName}`, data, 0);
+    await this.cacheManager.set(`key:${data.auctionId}`, data, 0);
     return data;
   }
 
   async getAuction(data: CreateAuctionDto) {
-    const res = await this.cacheManager.get(`key:${data.auctionName}`);
+    const res = await this.cacheManager.get(`key:${data.auctionId}`);
+    console.log(res);
     return res;
   }
 
