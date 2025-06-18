@@ -27,4 +27,4 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
   controllers: [AuctionListener],
   providers: [JobRunnerService, CloseAuctionConsumer, AuctionListener],
 })
-export class RunnerModule {}
+export class JobRunnerModule {}

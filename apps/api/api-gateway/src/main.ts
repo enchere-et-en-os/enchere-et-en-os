@@ -1,8 +1,8 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { type MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 import { AppModule } from './app.module';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 const logger = new Logger();
 
@@ -17,7 +17,7 @@ async function bootstrap() {
     options: {
       servers: [process.env.NATS_URL ?? 'nats://localhost:4222'],
     },
-  })
+  });
 
   await app.startAllMicroservices();
 
@@ -27,7 +27,6 @@ async function bootstrap() {
     .catch((error) =>
       logger.error('API Gateway is not listening', error, 'Bootstrap')
     );
-
 }
 
 void bootstrap();

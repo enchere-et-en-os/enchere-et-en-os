@@ -26,8 +26,8 @@ import { NatsClientModule } from './nats-client.module';
       policyEnforcement: PolicyEnforcementMode.PERMISSIVE, // optional
       tokenValidation: TokenValidation.ONLINE, // optional
     }),
-      NatsClientModule,
-      AuctionModule,
+    NatsClientModule,
+    AuctionModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useValue: AuthGuard }],

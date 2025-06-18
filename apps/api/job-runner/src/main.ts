@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { Transport } from '@nestjs/microservices';
 import { Logger } from '@nestjs/common';
-import { RunnerModule } from './runner/runner.module';
+import { JobRunnerModule } from './job-runner.module';
 
 const logger = new Logger();
 
@@ -9,7 +9,7 @@ const logger = new Logger();
  *
  */
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice(RunnerModule, {
+  const app = await NestFactory.createMicroservice(JobRunnerModule, {
     transport: Transport.NATS,
     options: {
       servers: [process.env.NATS_URL ?? 'nats://localhost:4222'],
