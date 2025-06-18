@@ -129,6 +129,7 @@ export class AuctionGateway
   @SubscribeMessage('close-room')
   closeRoom(room: string) {
     this.logger.log(`Closing room: ${room}`);
+    this.client.emit('auction-close', room);
 
     const auctionRoom = this.activeRooms.get(room);
     if (auctionRoom) {

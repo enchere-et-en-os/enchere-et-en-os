@@ -44,4 +44,9 @@ export class AuctionController {
       room: result.room,
     });
   }
+
+  @EventPattern('auction-close')
+  async closeAuction(@Payload() data: CreateAuctionDto) {
+    return this.auctionService.closeAuction();
+  }
 }
