@@ -14,8 +14,7 @@ export class ProductService {
   ) {}
 
   async create(dto: CreateProductDto) {
-    const product = this.productRepo.create(dto);
-    return this.productRepo.save(product);
+    return this.productRepo.save(dto);
   }
 
   async update(id: string, dto: UpdateProductDto) {

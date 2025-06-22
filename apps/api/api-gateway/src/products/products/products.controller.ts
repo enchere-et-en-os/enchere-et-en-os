@@ -24,9 +24,7 @@ export class ProductController {
 
   @Post()
   async create(@Body() body: CreateProductDto) {
-    return this.productService.send('create_product', {
-      ...body,
-    });
+    return this.productService.send('create_product', body);
   }
 
   @Put(':id')
