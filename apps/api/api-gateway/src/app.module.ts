@@ -11,6 +11,7 @@ import {
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { CategoriesModule } from './products/categories/categories.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { AppService } from './app.service';
       policyEnforcement: PolicyEnforcementMode.PERMISSIVE, // optional
       tokenValidation: TokenValidation.ONLINE, // optional
     }),
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useValue: AuthGuard }],
