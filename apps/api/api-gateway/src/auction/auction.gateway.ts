@@ -1,4 +1,6 @@
-import { Logger } from '@nestjs/common';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Logger } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -7,6 +9,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { firstValueFrom } from 'rxjs';
 import { Server, Socket } from 'socket.io';
 
 interface Bid {
@@ -32,6 +35,11 @@ export class AuctionGateway
   private readonly ROOM_TIMEOUT = 30_000;
   private readonly WARNING_DELAY = 5000;
 
+  constructor(
+    @Inject('NATS_SERVICES') private client: ClientProxy,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
+  ) {}
+
   @WebSocketServer() io: Server;
 
   afterInit() {
@@ -47,54 +55,81 @@ export class AuctionGateway
   }
 
   @SubscribeMessage('join-room')
-  async joinRoom(client: Socket, room: string) {
-    this.logger.log(`User ${client.id} joining room: ${room}`);
-    await client.join(room);
-    this.io.to(room).emit('new-user', `User ${client.id} connected`);
+  async joinRoom(client: Socket, auctionId: string) {
+    this.logger.log(`User ${client.id} joining auction: ${auctionId}`);
 
-    if (!this.activeRooms.has(room)) {
-      this.startRoomTimers(room);
+    // Récupérer ou créer l'ID de la room depuis Redis
+    let roomId = await this.cacheManager.get(`auction:${auctionId}:room`);
+    if (!roomId) {
+      roomId = `room:${auctionId}:${Date.now()}`;
+      await this.cacheManager.set(`auction:${auctionId}:room`, roomId, 0);
+    }
+
+    await client.join(roomId as string);
+    this.io
+      .to(roomId as string[] | string)
+      .emit('new-user', `User ${client.id} connected`);
+
+    if (!this.activeRooms.has(roomId as string)) {
+      this.startRoomTimers(roomId as string);
     }
   }
 
   @SubscribeMessage('place-bid')
-  placeBid(client: Socket, data: { amount: number; room: string }) {
-    const { room, amount } = data;
-    const auctionRoom = this.activeRooms.get(room);
+  async placeBid(client: Socket, data: { amount: number; auctionId: string }) {
+    const { auctionId, amount } = data;
 
+    // Récupérer l'ID de la room depuis Redis
+    const roomId = await this.cacheManager.get(`auction:${auctionId}:room`);
+    if (!roomId) {
+      client.emit('error', 'Auction not found');
+      return;
+    }
+
+    const auctionRoom = this.activeRooms.get(roomId as string);
     if (!auctionRoom) {
       client.emit('error', 'Room not found');
       return;
     }
 
-    const newBid: Bid = {
-      userId: client.id,
+    try {
+      const result = await firstValueFrom(
+        this.client.send('place-bid', {
+          amount,
+          room: roomId,
+          clientId: client.id,
+        })
+      );
+      if (result) {
+        this.handleBidResponse(result);
+      }
+    } catch (error) {
+      client.emit('error', 'Failed to place bid');
+      this.logger.error('Error placing bid:', error);
+    }
+  }
+
+  handleBidResponse(data: { amount: number; room: string }) {
+    const { room, amount } = data;
+    this.io.to(room).emit('bid-processed', {
       amount,
       timestamp: new Date(),
-    };
+    });
+  }
 
-    if (
-      !auctionRoom.currentHighestBid ||
-      amount > auctionRoom.currentHighestBid.amount
-    ) {
-      auctionRoom.currentHighestBid = newBid;
-      auctionRoom.bids.push(newBid);
-      this.io.to(room).emit('new-highest-bid', {
-        userId: client.id,
-        amount,
-        timestamp: newBid.timestamp,
-      });
-    } else {
-      client.emit(
-        'bid-rejected',
-        'Your bid is not higher than the current highest bid'
-      );
-    }
+  @SubscribeMessage('ping')
+  sendPing() {
+    this.client.emit('ping', {});
+  }
+
+  handleAuctionPong() {
+    this.io.emit('auction-pong', 'pong');
   }
 
   @SubscribeMessage('close-room')
   closeRoom(room: string) {
     this.logger.log(`Closing room: ${room}`);
+    this.client.emit('auction-close', room);
 
     const auctionRoom = this.activeRooms.get(room);
     if (auctionRoom) {

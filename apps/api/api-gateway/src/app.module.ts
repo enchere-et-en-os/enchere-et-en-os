@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 import {
   AuthGuard,
   KeycloakConnectModule,
@@ -11,6 +10,8 @@ import {
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuctionModule } from './auction/auction.module';
+import { NatsClientModule } from './nats-client.module';
 import { CategoriesModule } from './products/categories/categories.module';
 import { ProductsModule } from './products/products/products.module';
 
@@ -19,15 +20,6 @@ import { ProductsModule } from './products/products/products.module';
     ConfigModule.forRoot({
       envFilePath: ['../.env.local'],
     }),
-    ClientsModule.register([
-      {
-        name: 'NATS_SERVICES',
-        transport: Transport.NATS,
-        options: {
-          servers: [process.env.NATS_URL ?? 'nats://localhost:4222'],
-        },
-      },
-    ]),
     KeycloakConnectModule.register({
       authServerUrl: 'http://localhost:8080', // might be http://localhost:8080/auth for older keycloak versions
       realm: 'enchere',
@@ -36,6 +28,8 @@ import { ProductsModule } from './products/products/products.module';
       policyEnforcement: PolicyEnforcementMode.PERMISSIVE, // optional
       tokenValidation: TokenValidation.ONLINE, // optional
     }),
+    NatsClientModule,
+    AuctionModule,
     CategoriesModule,
     ProductsModule,
   ],
