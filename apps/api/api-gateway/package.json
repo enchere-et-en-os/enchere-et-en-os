@@ -25,6 +25,8 @@
     "@nestjs/core": "*",
     "@nestjs/microservices": "*",
     "@nestjs/platform-express": "*",
+    "@nestjs/mapped-types": "*",
+    "class-validator": "*",
     "keycloak-connect": "^26.1.1",
     "@nestjs/platform-socket.io": "^11.1.1",
     "@nestjs/websockets": "^11.1.1",
