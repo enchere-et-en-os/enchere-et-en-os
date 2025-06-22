@@ -13,13 +13,8 @@ export class AuctionListener {
 
   @EventPattern('auction.created')
   async auctionCreated(@Payload() data: AuctionCreatedEvent) {
-    const endDate = new Date(
-      new Date(data.startDate).getTime() + data.duration * 60 * 1000,
-    );
+    const startDate = new Date(data.startDate);
 
-    const roomId = `room:${data.auctionId}:${Date.now()}`;
-    await this.cacheManager.set(`auction:${data.auctionId}:room`, roomId, 0);
-
-    await this.jobRunnerService.closeAuction(data, endDate);
+    await this.jobRunnerService.startAuction(data, startDate);
   }
 }

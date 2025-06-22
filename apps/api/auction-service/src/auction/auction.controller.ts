@@ -45,8 +45,8 @@ export class AuctionController {
     });
   }
 
-  @EventPattern('auction-close')
+  @EventPattern('auction.close')
   async closeAuction(@Payload() data: CreateAuctionDto) {
-    return this.auctionService.closeAuction();
+    await this.auctionService.closeAuction();
   }
 }
