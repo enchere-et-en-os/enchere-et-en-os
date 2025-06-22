@@ -43,7 +43,10 @@ export class CategoriesController {
   }
 
   @Patch(':fromId/to/:toId')
-  moveProduct(@Param('fromId') fromId: string, @Param('toId') toId: string) {
-    return this.client.send('category.moveProduct', { fromId, toId });
+  moveProduct(@Param() parameters: { fromId: string; toId: string }) {
+    return this.client.send('category.moveProduct', {
+      fromId: parameters.fromId,
+      toId: parameters.toId,
+    });
   }
 }
