@@ -12,6 +12,7 @@ import {
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CategoriesModule } from './products/categories/categories.module';
+import { ProductsModule } from './products/products/products.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { CategoriesModule } from './products/categories/categories.module';
       tokenValidation: TokenValidation.ONLINE, // optional
     }),
     CategoriesModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useValue: AuthGuard }],

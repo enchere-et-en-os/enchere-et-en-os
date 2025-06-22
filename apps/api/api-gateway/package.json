@@ -25,13 +25,13 @@
     "@nestjs/core": "*",
     "@nestjs/microservices": "*",
     "@nestjs/platform-express": "*",
+    "@nestjs/mapped-types": "*",
+    "class-validator": "*",
     "keycloak-connect": "^26.1.1",
     "nats": "*",
     "nest-keycloak-connect": "^1.10.1",
     "reflect-metadata": "*",
-    "rxjs": "*",
-    "@nestjs/mapped-types": "*",
-    "class-validator": "*"
+    "rxjs": "*"
   },
   "devDependencies": {
     "@nestjs/cli": "*",
