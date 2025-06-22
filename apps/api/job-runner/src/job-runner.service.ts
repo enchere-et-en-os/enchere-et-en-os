@@ -8,7 +8,6 @@ export class JobRunnerService {
   constructor(@InjectQueue('auctionQueue') private auctionQueue: Queue) {}
 
   async closeAuction(data: AuctionCreatedEvent, endDate: Date) {
-    console.log('Closing auction queue service');
     const delay = endDate.getTime() - Date.now();
 
     await this.auctionQueue.add('close.auction', { data }, { delay });
