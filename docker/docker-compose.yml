@@ -1,52 +1,52 @@
 name: "Enchere-Et-En-Os"
 services:
-  api-gateway-api:
-    build:
-      context: ../apps/api/api-gateway
-      dockerfile: ../../../docker/Dockerfile.api
-    environment:
-      DATABASE_URL: postgres://user:password@main-db:5432/main
-      REDIS_HOST: redis
-      NATS_URL: nats://nats:4222
-    depends_on:
-      - main-db
-      - redis
-      - nats
-    ports:
-      - "8000:8000"
-
-  auction-api:
-    build:
-      context: ../apps/api/auction-service
-      dockerfile: ../../../docker/Dockerfile.api
-    environment:
-      DATABASE_URL: postgres://user:password@main-db:5432/main
-      REDIS_HOST: redis
-      NATS_URL: nats://nats:4222
-    depends_on:
-      - main-db
-      - redis
-      - nats
-
-  product-api:
-    build:
-      context: ../apps/api/product-service
-      dockerfile: ../../../docker/Dockerfile.api
-    environment:
-      DATABASE_URL: postgres://user:password@main-db:5432/main
-      REDIS_HOST: redis
-      NATS_URL: nats://nats:4222
-    depends_on:
-      - main-db
-      - redis
-      - nats
-
-  web:
-    build:
-      context: ../apps/web/enchere-et-en-os
-      dockerfile: ../../../docker/Dockerfile.web
-    ports:
-      - "3000:3000"
+#  api-gateway-api:
+#    build:
+#      context: ../apps/api/api-gateway
+#      dockerfile: ../../../docker/Dockerfile.api
+#    environment:
+#      DATABASE_URL: postgres://user:password@main-db:5432/main
+#      REDIS_HOST: redis
+#      NATS_URL: nats://nats:4222
+#    depends_on:
+#      - main-db
+#      - redis
+#      - nats
+#    ports:
+#      - "8000:8000"
+#
+#  auction-api:
+#    build:
+#      context: ../apps/api/auction-service
+#      dockerfile: ../../../docker/Dockerfile.api
+#    environment:
+#      DATABASE_URL: postgres://user:password@main-db:5432/main
+#      REDIS_HOST: redis
+#      NATS_URL: nats://nats:4222
+#    depends_on:
+#      - main-db
+#      - redis
+#      - nats
+#
+#  product-api:
+#    build:
+#      context: ../apps/api/product-service
+#      dockerfile: ../../../docker/Dockerfile.api
+#    environment:
+#      DATABASE_URL: postgres://user:password@main-db:5432/main
+#      REDIS_HOST: redis
+#      NATS_URL: nats://nats:4222
+#    depends_on:
+#      - main-db
+#      - redis
+#      - nats
+#
+#  web:
+#    build:
+#      context: ../apps/web/enchere-et-en-os
+#      dockerfile: ../../../docker/Dockerfile.web
+#    ports:
+#      - "3000:3000"
 
   redis:
     image: redis:7

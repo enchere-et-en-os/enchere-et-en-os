@@ -8,7 +8,7 @@ export class Auction {
   @Column({ type: 'uuid' })
   sellerId: string;
 
-  @Column({ nullable: false, type: 'uuid' })
+  @Column({ nullable: true, type: 'uuid' })
   buyerId: string;
 
   @Column({ type: 'varchar' })
@@ -20,15 +20,15 @@ export class Auction {
   @Column({ type: Date })
   startDate: Date;
 
-  @Column({ type: 'number' })
+  @Column({ type: 'int' })
   duration: number;
 
   @Column({ default: false, type: 'boolean' })
   statut: boolean;
 
-  @Column({ type: 'number' })
+  @Column({ type: 'int' })
   startPrice: number;
 
-  @Column({ nullable: false, type: 'number' })
+  @Column({ nullable: true, type: 'int' })
   lastPrice: number;
 }

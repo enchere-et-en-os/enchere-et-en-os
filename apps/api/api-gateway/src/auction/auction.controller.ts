@@ -3,7 +3,7 @@ import {
   Controller,
   Get,
   Inject,
-  Param,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -19,13 +19,20 @@ import { CreateAuctionDto } from './dto/create-auction';
 export class AuctionController {
   constructor(@Inject('NATS_SERVICES') private client: ClientProxy) {}
 
+  @Patch()
+  gettest() {
+    console.log('passs');
+  }
+
   @Post('auction')
   createAuction(@Body() data: CreateAuctionDto, @Req() req: TypedRequest) {
+    console.log(req.user.sub);
+
     return this.client.send('create-auction', { ...data, id: req.user.sub });
   }
 
-  @Get('auction/:id')
-  getAuction(@Param() parameters) {
-    return this.client.send('get-auction', parameters);
+  @Get('auction')
+  getAuction() {
+    return this.client.send('get-auction', '');
   }
 }

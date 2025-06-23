@@ -32,12 +32,12 @@ export class CategoriesController {
     return this.categoriesService.update(updateCategoryDto);
   }
 
-  @MessagePattern('category.moveProducts')
+  @MessagePattern('category.moveProduct')
   moveProducts(@Payload() { fromId, toId }: { fromId: string; toId: string }) {
     return this.categoriesService.moveProducts(fromId, toId);
   }
 
-  @MessagePattern('category.remove')
+  @MessagePattern('category.delete')
   remove(@Payload() id: string) {
     return this.categoriesService.remove(id);
   }

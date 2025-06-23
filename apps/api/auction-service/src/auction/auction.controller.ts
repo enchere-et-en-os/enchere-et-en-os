@@ -28,8 +28,8 @@ export class AuctionController {
   }
 
   @MessagePattern('get-auction')
-  async getAuction(@Payload() data: CreateAuctionDto) {
-    return this.auctionService.getAuction(data);
+  async getAuction(@Payload() data: string) {
+    return this.auctionService.getAuction();
   }
 
   @EventPattern('place-bid')
