@@ -9,14 +9,14 @@ import { JobRunnerService } from '../job-runner.service';
 type StartAuctionJob = Job<AuctionCreatedEvent> & { name: 'start.auction' };
 type CloseAuctionJob = Job<string> & { name: 'close.auction' };
 
-type AuctionJob = StartAuctionJob | CloseAuctionJob;
+export type AuctionJob = StartAuctionJob | CloseAuctionJob;
 
 @Processor('auctionQueue')
 export class AuctionConsumer extends WorkerHost {
   constructor(
     @Inject('NATS_SERVICES') private readonly auctionClient: ClientProxy,
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
-    private readonly jobRunnerService: JobRunnerService,
+    public jobRunnerService: JobRunnerService,
   ) {
     super();
   }

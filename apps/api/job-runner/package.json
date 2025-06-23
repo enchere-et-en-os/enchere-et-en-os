@@ -13,9 +13,9 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
+    "test": "vitest run",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
+    "test:cov": "vitest run --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
@@ -28,7 +28,8 @@
     "@nestjs/platform-express": "*",
     "bullmq": "*",
     "reflect-metadata": "*",
-    "rxjs": "*"
+    "rxjs": "*",
+    "vitest": "^3.2.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "*",
@@ -42,6 +43,7 @@
     "@types/jest": "*",
     "@types/node": "*",
     "@types/supertest": "*",
+    "@vitest/coverage-v8": "3.2.4",
     "eslint": "*",
     "eslint-config-prettier": "*",
     "eslint-plugin-prettier": "*",
