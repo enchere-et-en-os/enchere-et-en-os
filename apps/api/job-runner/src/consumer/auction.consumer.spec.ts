@@ -1,26 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuctionConsumer } from './auction.consumer';
+import { AuctionConsumer, AuctionJob } from './auction.consumer';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ClientProxy } from '@nestjs/microservices';
 import { JobRunnerService } from '../job-runner.service';
 import { Job } from 'bullmq';
 import { AuctionCreatedEvent } from '../types/auction-created-event';
-import { beforeEach, describe, it, vi } from 'vitest';
+import { beforeEach, describe, it, vi, expect } from 'vitest';
 
 describe('AuctionConsumer', () => {
   let consumer: AuctionConsumer;
-  let mockClientProxy: ClientProxy;
+  let mockClientProxy: Partial<ClientProxy>;
   let mockCache: {
     set: (key: string, value: unknown, ttl: number) => Promise<void>;
     get: (key: string) => Promise<unknown>;
     del: (key: string) => Promise<void>;
   };
-  let mockJobRunnerService: JobRunnerService;
+  let mockJobRunnerService: Partial<JobRunnerService>;
 
   beforeEach(async () => {
     mockClientProxy = {
       emit: vi.fn(),
-    } as unknown as ClientProxy;
+    };
 
     mockCache = {
       set: vi.fn(),
@@ -28,7 +28,7 @@ describe('AuctionConsumer', () => {
       del: vi.fn(),
     };
 
-    const mockJobRunnerService: Partial<JobRunnerService> = {
+    mockJobRunnerService = {
       closeAuction: vi.fn(),
     };
 
@@ -42,9 +42,13 @@ describe('AuctionConsumer', () => {
     }).compile();
 
     consumer = module.get(AuctionConsumer);
+    (consumer as { jobRunnerService: JobRunnerService }).jobRunnerService =
+      mockJobRunnerService as JobRunnerService;
   });
 
   it('should process start.auction and set data in cache and schedule close', async () => {
+    console.log('mockJobRunnerService:', mockJobRunnerService);
+
     const job = {
       name: 'start.auction',
       data: {
@@ -99,8 +103,8 @@ describe('AuctionConsumer', () => {
   it('should do nothing for unknown job name', async () => {
     const job = {
       name: 'unknown.job',
-      data: {},
-    } as Job<unknown> & { name: string };
+      data: 'any',
+    } as AuctionJob;
 
     await expect(consumer.process(job)).resolves.toBeUndefined();
     expect(mockCache.set).not.toHaveBeenCalled();
