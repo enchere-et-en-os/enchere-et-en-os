@@ -2,33 +2,33 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Auction {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   auctionId: string;
 
-  @Column({ nullable: false })
+  @Column({ type: 'uuid' })
   sellerId: string;
 
-  @Column()
+  @Column({ nullable: false, type: 'uuid' })
   buyerId: string;
 
-  @Column({ nullable: false })
+  @Column({ type: 'varchar' })
   auctionName: string;
 
-  @Column({ nullable: false })
+  @Column({ type: 'uuid' })
   productId: string;
 
-  @Column({ nullable: false })
+  @Column({ type: Date })
   startDate: Date;
 
-  @Column({ nullable: false })
+  @Column({ type: 'number' })
   duration: number;
 
-  @Column({ nullable: false, default: false })
+  @Column({ default: false, type: 'boolean' })
   statut: boolean;
 
-  @Column({ nullable: false })
+  @Column({ type: 'number' })
   startPrice: number;
 
-  @Column()
+  @Column({ nullable: false, type: 'number' })
   lastPrice: number;
 }

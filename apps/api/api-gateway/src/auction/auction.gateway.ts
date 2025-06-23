@@ -31,9 +31,6 @@ export class AuctionGateway
 {
   private readonly logger = new Logger(AuctionGateway.name);
   private activeRooms: Map<string, AuctionRoom> = new Map();
-  // private readonly ROOM_TIMEOUT = 3600000;
-  private readonly ROOM_TIMEOUT = 30_000;
-  private readonly WARNING_DELAY = 5000;
 
   constructor(
     @Inject('NATS_SERVICES') private client: ClientProxy,
