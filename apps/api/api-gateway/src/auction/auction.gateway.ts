@@ -31,9 +31,6 @@ export class AuctionGateway
 {
   private readonly logger = new Logger(AuctionGateway.name);
   private activeRooms: Map<string, AuctionRoom> = new Map();
-  // private readonly ROOM_TIMEOUT = 3600000;
-  private readonly ROOM_TIMEOUT = 30_000;
-  private readonly WARNING_DELAY = 5000;
 
   constructor(
     @Inject('NATS_SERVICES') private client: ClientProxy,
@@ -58,21 +55,10 @@ export class AuctionGateway
   async joinRoom(client: Socket, auctionId: string) {
     this.logger.log(`User ${client.id} joining auction: ${auctionId}`);
 
-    // Récupérer ou créer l'ID de la room depuis Redis
-    let roomId = await this.cacheManager.get(`auction:${auctionId}:room`);
-    if (!roomId) {
-      roomId = `room:${auctionId}:${Date.now()}`;
-      await this.cacheManager.set(`auction:${auctionId}:room`, roomId, 0);
-    }
-
-    await client.join(roomId as string);
+    await client.join(auctionId as string);
     this.io
-      .to(roomId as string[] | string)
+      .to(auctionId as string[] | string)
       .emit('new-user', `User ${client.id} connected`);
-
-    if (!this.activeRooms.has(roomId as string)) {
-      this.startRoomTimers(roomId as string);
-    }
   }
 
   @SubscribeMessage('place-bid')
@@ -122,64 +108,14 @@ export class AuctionGateway
     this.client.emit('ping', {});
   }
 
-  handleAuctionPong() {
-    this.io.emit('auction-pong', 'pong');
-  }
-
-  @SubscribeMessage('close-room')
-  closeRoom(room: string) {
-    this.logger.log(`Closing room: ${room}`);
-    this.client.emit('auction-close', room);
-
-    const auctionRoom = this.activeRooms.get(room);
-    if (auctionRoom) {
-      const winner = auctionRoom.currentHighestBid;
-      if (winner) {
-        this.io.to(room).emit('auction-ended', {
-          winner: winner.userId,
-          winningAmount: winner.amount,
-          timestamp: winner.timestamp,
-        });
-      } else {
-        this.io
-          .to(room)
-          .emit('auction-ended', { message: 'No bids were placed' });
-      }
-    }
-
-    this.clearRoomTimers(room);
-    this.io.to(room).emit('room-closed', 'Room is being closed');
-    this.io.in(room).socketsLeave(room);
-  }
-
-  private startRoomTimers(room: string) {
-    const warningTimeout = setTimeout(() => {
-      this.io.to(room).emit('room-will-close', 'Room will close in 2 seconds');
-    }, this.ROOM_TIMEOUT - this.WARNING_DELAY);
-
-    const closeTimeout = setTimeout(() => {
-      this.closeRoom(room);
-    }, this.ROOM_TIMEOUT);
-
-    this.activeRooms.set(room, {
-      closeTimeout,
-      warningTimeout,
-      bids: [],
-      currentHighestBid: null,
-    });
-  }
-
-  private clearRoomTimers(room: string) {
-    const timers = this.activeRooms.get(room);
-    if (timers) {
-      clearTimeout(timers.warningTimeout);
-      clearTimeout(timers.closeTimeout);
-      this.activeRooms.delete(room);
-    }
-  }
-
-  private resetRoomTimer(room: string) {
-    this.clearRoomTimers(room);
-    this.startRoomTimers(room);
+  closeRoom(finalPrice: number, roomId: string) {
+    this.io
+      .to(roomId)
+      .emit(
+        'auction.close',
+        'This room is closed, the final price is ' +
+          finalPrice +
+          '. You can leave this room, thank you !'
+      );
   }
 }

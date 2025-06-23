@@ -1,28 +1,29 @@
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
+import { Auction } from './auction.entity';
+import { CloseAuctionDto } from './dto/close-auction';
 import { CreateAuctionDto } from './dto/create-auction';
 
 @Injectable()
 export class AuctionService {
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    @Inject('NATS_SERVICES') private readonly natsClient: ClientProxy
+    @Inject('NATS_SERVICES') private readonly natsClient: ClientProxy,
+    @InjectRepository(Auction) private readonly auctionRepo: Repository<Auction>
   ) {}
 
   async createAuction(data: CreateAuctionDto) {
-    await this.cacheManager.set(`key:${data.auctionId}`, data, 0);
-    console.log('Create Auction');
+    await this.auctionRepo.save({ ...data, sellerId: data.id });
     this.natsClient.emit('auction.created', data);
-    console.log(`Auction created for ${data.auctionId}`);
-
     return data;
   }
 
   async getAuction(data: CreateAuctionDto) {
     const res = await this.cacheManager.get(`key:${data.auctionId}`);
-    console.log(res);
     return res;
   }
 
@@ -37,7 +38,11 @@ export class AuctionService {
     return res;
   }
 
-  async closeAuction() {
-    console.log('auction closed');
+  async closeAuction(data: CloseAuctionDto) {
+    await this.auctionRepo.save({ ...data, statut: true });
+    this.natsClient.emit('ws.close.auction', {
+      price: data.finalPrice,
+      room: data.auctionId,
+    });
   }
 }
