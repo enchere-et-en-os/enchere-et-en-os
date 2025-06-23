@@ -1,16 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
-import {
-  AuthGuard,
-  KeycloakConnectModule,
-  PolicyEnforcementMode,
-  TokenValidation,
-} from 'nest-keycloak-connect';
+import { AuthGuard } from 'nest-keycloak-connect';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuctionModule } from './auction/auction.module';
+import { KeycloakModule } from './keycloak.module';
 import { NatsClientModule } from './nats-client.module';
 import { CategoriesModule } from './products/categories/categories.module';
 import { ProductsModule } from './products/products/products.module';
@@ -20,20 +16,16 @@ import { ProductsModule } from './products/products/products.module';
     ConfigModule.forRoot({
       envFilePath: ['../.env.local'],
     }),
-    KeycloakConnectModule.register({
-      authServerUrl: 'http://localhost:8080', // might be http://localhost:8080/auth for older keycloak versions
-      realm: 'enchere',
-      clientId: 'front',
-      secret: 'uHyTIrI3y2c2UtuN09zrI7mzJSzfLJRH',
-      policyEnforcement: PolicyEnforcementMode.PERMISSIVE, // optional
-      tokenValidation: TokenValidation.ONLINE, // optional
-    }),
+    KeycloakModule,
     NatsClientModule,
     AuctionModule,
     CategoriesModule,
     ProductsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, { provide: APP_GUARD, useValue: AuthGuard }],
+  providers: [
+    AppService,
+    { provide: APP_GUARD, useValue: AuthGuard, useClass: AuthGuard },
+  ],
 })
 export class AppModule {}
