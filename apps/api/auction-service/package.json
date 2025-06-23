@@ -25,9 +25,11 @@
     "@nestjs/core": "*",
     "@nestjs/microservices": "*",
     "@nestjs/platform-express": "*",
+    "@nestjs/typeorm": "*",
     "nats": "*",
     "reflect-metadata": "*",
-    "rxjs": "*"
+    "rxjs": "*",
+    "typeorm": "*"
   },
   "devDependencies": {
     "@nestjs/cache-manager": "*",

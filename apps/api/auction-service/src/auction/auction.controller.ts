@@ -7,6 +7,7 @@ import {
 } from '@nestjs/microservices';
 
 import { AuctionService } from './auction.service';
+import { CloseAuctionDto } from './dto/close-auction';
 import { CreateAuctionDto } from './dto/create-auction';
 
 @Controller()
@@ -23,7 +24,6 @@ export class AuctionController {
 
   @MessagePattern('create-auction')
   async createAuction(@Payload() data: CreateAuctionDto) {
-    console.log(data);
     return this.auctionService.createAuction(data);
   }
 
@@ -46,7 +46,7 @@ export class AuctionController {
   }
 
   @EventPattern('auction.close')
-  async closeAuction(@Payload() data: CreateAuctionDto) {
-    await this.auctionService.closeAuction();
+  async closeAuction(@Payload() data: CloseAuctionDto) {
+    await this.auctionService.closeAuction(data);
   }
 }
