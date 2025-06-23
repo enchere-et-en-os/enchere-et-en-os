@@ -10,41 +10,30 @@ import type { CreateAuctionDto } from './dto/create-auction';
 
 import { AuctionService } from './auction.service';
 
-// ---- Mock dependencies for AuctionService ----
-
-// Mock for the cache manager
-const cacheManager = {
-  get: vi.fn(),
-  set: vi.fn(),
-} as unknown as Cache;
-
-// Mock for the NATS client
-const natsClient = {
-  emit: vi.fn(),
-} as unknown as ClientProxy;
-
-// Mock for the Auction repository
-const auctionRepo = {
-  save: vi.fn(),
-} as unknown as Repository<Auction>;
-
-// ---- Main test suite for AuctionService ----
-
 describe('AuctionService', () => {
   let service: AuctionService;
 
-  // Reset mocks and create a fresh service instance before each test
+  const cacheManager = {
+    get: vi.fn(),
+    set: vi.fn(),
+  } as unknown as Cache;
+
+  const natsClient = {
+    emit: vi.fn(),
+  } as unknown as ClientProxy;
+
+  const auctionRepo = {
+    save: vi.fn(),
+  } as unknown as Repository<Auction>;
+
   beforeEach(() => {
     vi.clearAllMocks();
     service = new AuctionService(cacheManager, natsClient, auctionRepo);
   });
 
-  // Sanity check: the service should be defined
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-
-  // ---- Tests for createAuction ----
 
   describe('createAuction', () => {
     it('should save auction and emit event', async () => {
@@ -58,86 +47,96 @@ describe('AuctionService', () => {
         startPrice: 100,
       };
 
-      // Mock repository save and NATS emit
-      (
-        auctionRepo.save as unknown as ReturnType<typeof vi.fn>
-      ).mockResolvedValueOnce(undefined);
-      (
-        natsClient.emit as unknown as ReturnType<typeof vi.fn>
-      ).mockReturnValueOnce(undefined);
+      (auctionRepo.save as ReturnType<typeof vi.fn>).mockResolvedValueOnce(dto);
+      (natsClient.emit as ReturnType<typeof vi.fn>).mockReturnValueOnce(
+        undefined
+      );
 
-      // Call the method
       const result = await service.createAuction(dto);
 
-      // It should save the auction with sellerId
       expect(auctionRepo.save).toHaveBeenCalledWith({
         ...dto,
         sellerId: dto.id,
       });
-
-      // It should emit an 'auction.created' event
       expect(natsClient.emit).toHaveBeenCalledWith('auction.created', dto);
-
-      // It should return the DTO
-      expect(result).toBe(dto);
+      expect(result).toEqual(dto);
     });
   });
-
-  // ---- Tests for getAuction ----
 
   describe('getAuction', () => {
     it('should get auction from cache', async () => {
       const dto = { auctionId: '1' } as CreateAuctionDto;
 
-      // Mock cache get
-      (
-        cacheManager.get as unknown as ReturnType<typeof vi.fn>
-      ).mockResolvedValueOnce('auction-data');
+      (cacheManager.get as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+        'auction-data'
+      );
 
       const result = await service.getAuction(dto);
 
-      // It should look up the auction using a key
-      expect(cacheManager.get).toHaveBeenCalledWith('key:1');
+      expect(cacheManager.get).toHaveBeenCalledWith('auction:1:room');
       expect(result).toBe('auction-data');
     });
   });
 
-  // ---- Tests for placeBid ----
-
   describe('placeBid', () => {
-    it('should set bid in cache', async () => {
-      const data = { amount: 10, clientId: 'c', room: 'r' };
+    it('should throw if room not found', async () => {
+      (cacheManager.get as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+        null
+      );
 
-      // Mock cache set
-      (
-        cacheManager.set as unknown as ReturnType<typeof vi.fn>
-      ).mockResolvedValueOnce(undefined);
+      await expect(
+        service.placeBid({ auctionId: '1', clientId: 'c', amount: 150 })
+      ).rejects.toThrow('Room auction:1:room not found');
+    });
 
-      const result = await service.placeBid(data);
+    it('should throw if bid not higher than existing', async () => {
+      (cacheManager.get as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+        auctionId: '1',
+        bids: [{ clientId: 'a', price: 200 }],
+        duration: 0,
+        endDate: '',
+        startDate: '',
+        startPrice: 100,
+        userId: 'u',
+      });
 
-      // It should save the bid in cache with the correct key
-      expect(cacheManager.set).toHaveBeenCalledWith('bid:r', data, 0);
-      expect(result).toBe(data);
+      await expect(
+        service.placeBid({ auctionId: '1', clientId: 'c', amount: 150 })
+      ).rejects.toThrow('Bid of 150 is not higher than existing bids');
+    });
+
+    it('should add bid if amount is higher and update cache', async () => {
+      const room = {
+        auctionId: '1',
+        bids: [{ clientId: 'a', price: 100 }],
+        duration: 0,
+        endDate: '',
+        startDate: '',
+        startPrice: 100,
+        userId: 'u',
+      };
+
+      (cacheManager.get as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+        room
+      );
+      (cacheManager.set as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+        undefined
+      );
+
+      const result = await service.placeBid({
+        auctionId: '1',
+        clientId: 'c',
+        amount: 150,
+      });
+
+      expect(result.bids).toContainEqual({ clientId: 'c', price: 150 });
+      expect(cacheManager.set).toHaveBeenCalledWith(
+        'auction:1:room',
+        result,
+        0
+      );
     });
   });
-
-  // ---- Tests for getBid ----
-
-  describe('getBid', () => {
-    it('should get bid from cache', async () => {
-      (
-        cacheManager.get as unknown as ReturnType<typeof vi.fn>
-      ).mockResolvedValueOnce('bid-data');
-
-      const result = await service.getBid('room1');
-
-      // It should retrieve the bid using the key
-      expect(cacheManager.get).toHaveBeenCalledWith('bid:room1');
-      expect(result).toBe('bid-data');
-    });
-  });
-
-  // ---- Tests for closeAuction ----
 
   describe('closeAuction', () => {
     it('should save auction as closed and emit close event', async () => {
@@ -147,20 +146,16 @@ describe('AuctionService', () => {
         finalPrice: 200,
       };
 
-      // Mock save and emit
-      (
-        auctionRepo.save as unknown as ReturnType<typeof vi.fn>
-      ).mockResolvedValueOnce(undefined);
-      (
-        natsClient.emit as unknown as ReturnType<typeof vi.fn>
-      ).mockReturnValueOnce(undefined);
+      (auctionRepo.save as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+        undefined
+      );
+      (natsClient.emit as ReturnType<typeof vi.fn>).mockReturnValueOnce(
+        undefined
+      );
 
       await service.closeAuction(dto);
 
-      // It should mark the auction as closed (statut = true)
       expect(auctionRepo.save).toHaveBeenCalledWith({ ...dto, statut: true });
-
-      // It should emit a WebSocket close event
       expect(natsClient.emit).toHaveBeenCalledWith('ws.close.auction', {
         price: dto.finalPrice,
         room: dto.auctionId,

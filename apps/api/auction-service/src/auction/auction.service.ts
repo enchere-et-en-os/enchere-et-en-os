@@ -8,6 +8,21 @@ import { Auction } from './auction.entity';
 import { CloseAuctionDto } from './dto/close-auction';
 import { CreateAuctionDto } from './dto/create-auction';
 
+type Bid = {
+  clientId: string;
+  price: number;
+};
+
+type AuctionRoom = {
+  auctionId: string;
+  bids: Bid[];
+  duration: number;
+  endDate: string;
+  startDate: string;
+  startPrice: number;
+  userId: string;
+};
+
 @Injectable()
 export class AuctionService {
   constructor(
@@ -17,25 +32,45 @@ export class AuctionService {
   ) {}
 
   async createAuction(data: CreateAuctionDto) {
-    await this.auctionRepo.save({ ...data, sellerId: data.id });
+    const res = await this.auctionRepo.save({ ...data, sellerId: data.id });
     this.natsClient.emit('auction.created', data);
-    return data;
+    return res;
   }
 
   async getAuction(data: CreateAuctionDto) {
-    const res = await this.cacheManager.get(`key:${data.auctionId}`);
-    return res;
+    return this.cacheManager.get(`auction:${data.auctionId}:room`);
   }
 
-  async placeBid(data: { amount: number; clientId: string; room: string }) {
-    const { room } = data;
-    await this.cacheManager.set(`bid:${room}`, data, 0);
-    return data;
-  }
+  async placeBid(data: {
+    amount: number;
+    auctionId: string;
+    clientId: string;
+  }) {
+    const { auctionId, clientId, amount } = data;
 
-  async getBid(room: string) {
-    const res = await this.cacheManager.get(`bid:${room}`);
-    return res;
+    // Récupère l'objet complet dans Redis
+    const roomKey = `auction:${auctionId}:room`;
+    const room = (await this.cacheManager.get(roomKey)) as AuctionRoom;
+
+    if (!room) {
+      throw new Error(`Room ${roomKey} not found`);
+    }
+
+    // Vérifie si l'amount est supérieur à tous les prix existants
+    const isHigher = room.bids.every((bid) => amount > bid.price);
+
+    if (!isHigher) {
+      throw new Error(`Bid of ${amount} is not higher than existing bids`);
+    }
+
+    // Ajoute le nouveau bid
+    room.bids.push({ clientId, price: amount });
+
+    // Mets à jour Redis
+    await this.cacheManager.set(roomKey, room, 0);
+
+    // Optionnel : retourner le room ou juste les bids
+    return room;
   }
 
   async closeAuction(data: CloseAuctionDto) {

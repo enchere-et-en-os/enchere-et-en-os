@@ -29,7 +29,8 @@
     "nats": "*",
     "reflect-metadata": "*",
     "rxjs": "*",
-    "typeorm": "*"
+    "typeorm": "*",
+    "vitest": "^3.2.3"
   },
   "devDependencies": {
     "@nestjs/cache-manager": "*",
