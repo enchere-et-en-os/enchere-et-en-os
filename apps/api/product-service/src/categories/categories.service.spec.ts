@@ -12,6 +12,7 @@ import { CategoriesService } from './categories.service';
 import { type CreateCategoryDto } from './dto/create-category.dto';
 import { type UpdateCategoryDto } from './dto/update-category.dto';
 import { Category } from './entities/category.entity';
+import { FakerCategory } from './entities/faker-category.entity';
 
 const mockCategoryRepo = {
   save: vi.fn(),
@@ -57,13 +58,13 @@ describe('CategoriesService', () => {
 
   describe('create', () => {
     it('should create a category without parent', async () => {
-      const dto: CreateCategoryDto = { name: 'Test Category' };
-      const expected: Category = { id: '1', name: dto.name } as Category;
+      const category = FakerCategory.generateFakeCategory();
+      const dto: CreateCategoryDto = { name: category.name };
 
-      categoryRepo.save.mockResolvedValue(expected);
+      categoryRepo.save.mockResolvedValue(category);
 
       const result = await service.create(dto);
-      expect(result).toEqual(expected);
+      expect(result).toEqual(category);
       expect(categoryRepo.save).toHaveBeenCalledWith({
         name: dto.name,
         parent: null,
@@ -71,23 +72,28 @@ describe('CategoriesService', () => {
     });
 
     it('should create a category with parent', async () => {
+      const parentCategory = FakerCategory.generateFakeCategory();
+      const childCategory = FakerCategory.generateFakeCategory(parentCategory);
+
       const dto: CreateCategoryDto = {
-        name: 'Child Category',
-        parentId: 'parent-id',
+        name: childCategory.name,
+        parentId: parentCategory.id,
       };
 
       await service.create(dto);
 
       expect(categoryRepo.save).toHaveBeenCalledWith({
-        name: 'Child Category',
-        parent: { id: 'parent-id' },
+        name: childCategory.name,
+        parent: { id: parentCategory.id },
       });
     });
   });
 
   describe('findAll', () => {
     it('should return all categories', async () => {
-      const categories: Category[] = [{ name: 'Category' } as Category];
+      const categories: Category[] = [
+        FakerCategory.generateFakeCategory(),
+      ] as Category[];
       categoryRepo.find.mockResolvedValue(categories);
 
       const result = await service.findAll();
@@ -97,10 +103,10 @@ describe('CategoriesService', () => {
 
   describe('findOne', () => {
     it('should return a category by id', async () => {
-      const category: Category = { id: '123', name: 'Test' } as Category;
+      const category: Category = FakerCategory.generateFakeCategory();
       categoryRepo.findOne.mockResolvedValue(category);
 
-      const result = await service.findOne('123');
+      const result = await service.findOne(category.id);
       expect(result).toEqual(category);
     });
   });
