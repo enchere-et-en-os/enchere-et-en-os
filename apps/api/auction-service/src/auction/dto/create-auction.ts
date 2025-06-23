@@ -7,6 +7,10 @@ export class CreateAuctionDto {
 
   @IsString()
   @IsNotEmpty()
+  id: string;
+
+  @IsString()
+  @IsNotEmpty()
   auctionName: string;
 
   @IsString()
