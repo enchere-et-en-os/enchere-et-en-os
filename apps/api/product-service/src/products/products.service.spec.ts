@@ -3,6 +3,7 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { Category } from '../categories/entities/category.entity';
 import { FakerCategory } from '../categories/entities/faker-category.entity';
 import { type CreateProductDto } from './dto/create-product.dto';
 import { type UpdateProductDto } from './dto/update-product.dto';
@@ -22,6 +23,10 @@ describe('ProductService', () => {
     remove: vi.fn(),
   };
 
+  const mockCategoryRepo = {
+    findOneBy: vi.fn(),
+  };
+
   const category = FakerCategory.generateFakeCategory();
   const exampleProduct = FakerProduct.generateFakeProduct(category);
 
@@ -32,6 +37,10 @@ describe('ProductService', () => {
         {
           provide: getRepositoryToken(Product),
           useValue: mockProductRepo,
+        },
+        {
+          provide: getRepositoryToken(Category), // ou `Category` si c’est l'entity réelle utilisée
+          useValue: mockCategoryRepo,
         },
       ],
     }).compile();
@@ -49,6 +58,7 @@ describe('ProductService', () => {
       categoryId: category.id,
     };
 
+    mockCategoryRepo.findOneBy.mockResolvedValue(category);
     mockProductRepo.save.mockResolvedValue({ ...dto, id: exampleProduct.id });
 
     const result = await service.create(dto as CreateProductDto); // `as any` si le service attend `category` complet

@@ -8,7 +8,7 @@ describe('AuctionListener', () => {
   let jobRunnerMock: Partial<JobRunnerService>;
 
   const validEvent: AuctionCreatedEvent = {
-    auctionId: 'auction-1',
+    id: 'auction-1',
     auctionName: 'Auction',
     productId: 'product-123',
     startDate: new Date().toISOString(),

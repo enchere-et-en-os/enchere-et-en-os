@@ -52,18 +52,20 @@ describe('AuctionConsumer', () => {
     const job = {
       name: 'start.auction',
       data: {
-        auctionId: 'abc123',
-        userId: 'user1',
-        startPrice: 100,
-        startDate: new Date().toISOString(),
-        duration: 10000,
+        data: {
+          id: 'abc123',
+          userId: 'user1',
+          startPrice: 100,
+          startDate: new Date().toISOString(),
+          duration: 10000,
+        },
       },
-    } as Job<AuctionCreatedEvent> & { name: 'start.auction' };
+    } as Job<{ data: AuctionCreatedEvent }> & { name: 'start.auction' };
 
     await consumer.process(job);
 
     const endDate = new Date(
-      new Date(job.data.startDate).getTime() + job.data.duration,
+      new Date(job.data.data.startDate).getTime() + job.data.data.duration,
     );
 
     expect(mockCache.set).toHaveBeenCalledWith(
