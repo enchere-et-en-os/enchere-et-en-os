@@ -29,19 +29,18 @@ export class AuctionController {
 
   @MessagePattern('get-auction')
   async getAuction(@Payload() data: CreateAuctionDto) {
-    console.log('passed');
     return this.auctionService.getAuction(data);
   }
 
   @EventPattern('place-bid')
   async placeBid(
-    @Payload() data: { amount: number; clientId: string; room: string }
+    @Payload() data: { amount: number; auctionId: string; clientId: string }
   ) {
-    const result = await this.auctionService.placeBid(data);
-    this.client.emit('bid', {
-      amount: result.amount,
-      clientId: result.clientId,
-      room: result.room,
+    await this.auctionService.placeBid(data);
+    this.client.emit('api-gateway:bid.saved', {
+      amount: data.amount,
+      clientId: data.clientId,
+      room: data.auctionId,
     });
   }
 

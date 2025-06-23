@@ -9,28 +9,13 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { firstValueFrom } from 'rxjs';
 import { Server, Socket } from 'socket.io';
-
-interface Bid {
-  amount: number;
-  timestamp: Date;
-  userId: string;
-}
-
-interface AuctionRoom {
-  bids: Bid[];
-  closeTimeout: NodeJS.Timeout;
-  currentHighestBid: Bid | null;
-  warningTimeout: NodeJS.Timeout;
-}
 
 @WebSocketGateway()
 export class AuctionGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   private readonly logger = new Logger(AuctionGateway.name);
-  private activeRooms: Map<string, AuctionRoom> = new Map();
 
   constructor(
     @Inject('NATS_SERVICES') private client: ClientProxy,
@@ -51,6 +36,11 @@ export class AuctionGateway
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
+  @SubscribeMessage('ping')
+  sendPing() {
+    this.client.emit('ping', {});
+  }
+
   @SubscribeMessage('join-room')
   async joinRoom(client: Socket, auctionId: string) {
     this.logger.log(`User ${client.id} joining auction: ${auctionId}`);
@@ -62,38 +52,20 @@ export class AuctionGateway
   }
 
   @SubscribeMessage('place-bid')
-  async placeBid(client: Socket, data: { amount: number; auctionId: string }) {
+  async placeBid(
+    client: Socket,
+    data: { amount: number; auctionId: string; userId: string }
+  ) {
     const { auctionId, amount } = data;
 
-    // Récupérer l'ID de la room depuis Redis
-    const roomId = await this.cacheManager.get(`auction:${auctionId}:room`);
-    if (!roomId) {
-      client.emit('error', 'Auction not found');
-      return;
-    }
-
-    const auctionRoom = this.activeRooms.get(roomId as string);
-    if (!auctionRoom) {
-      client.emit('error', 'Room not found');
-      return;
-    }
-
-    try {
-      const result = await firstValueFrom(
-        this.client.send('place-bid', {
-          amount,
-          room: roomId,
-          clientId: client.id,
-        })
-      );
-      if (result) {
-        this.handleBidResponse(result);
-      }
-    } catch (error) {
-      client.emit('error', 'Failed to place bid');
-      this.logger.error('Error placing bid:', error);
-    }
+    this.client.send('place-bid', {
+      amount,
+      auctionId: auctionId,
+      clientId: client.id,
+    });
   }
+
+  // Function call when NATS send event for WS
 
   handleBidResponse(data: { amount: number; room: string }) {
     const { room, amount } = data;
@@ -101,11 +73,6 @@ export class AuctionGateway
       amount,
       timestamp: new Date(),
     });
-  }
-
-  @SubscribeMessage('ping')
-  sendPing() {
-    this.client.emit('ping', {});
   }
 
   closeRoom(finalPrice: number, roomId: string) {
