@@ -28,7 +28,8 @@
     "@nestjs/platform-express": "*",
     "bullmq": "*",
     "reflect-metadata": "*",
-    "rxjs": "*"
+    "rxjs": "*",
+    "vitest": "^3.2.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "*",
