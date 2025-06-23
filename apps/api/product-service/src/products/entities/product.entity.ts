@@ -16,8 +16,6 @@ export class Product {
   @Column('text', { array: true, nullable: true })
   images: string[];
 
-  user_id: string;
-
   @ManyToOne(() => Category, (category) => category.products)
   category: Category;
 }
