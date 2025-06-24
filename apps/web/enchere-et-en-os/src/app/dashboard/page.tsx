@@ -149,9 +149,9 @@ export default function Dashboard() {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Créer une nouvelle salle d'enchères</DialogTitle>
+                <DialogTitle>Créer une nouvelle salle d&apos;enchères</DialogTitle>
                 <DialogDescription>
-                  Configurez votre salle d'enchères. Les participants pourront la rejoindre une fois créée.
+                  Configurez votre salle d&apos;enchères. Les participants pourront la rejoindre une fois créée.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
