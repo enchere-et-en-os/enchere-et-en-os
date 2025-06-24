@@ -53,7 +53,7 @@ describe('AuctionConsumer', () => {
       name: 'start.auction',
       data: {
         data: {
-          id: 'abc123',
+          auctionId: 'abc123',
           userId: 'user1',
           startPrice: 100,
           startDate: new Date().toISOString(),
@@ -92,8 +92,8 @@ describe('AuctionConsumer', () => {
   it('should process close.auction and emit event then delete cache', async () => {
     const job = {
       name: 'close.auction',
-      data: 'auction:abc123:room',
-    } as Job<string> & { name: 'close.auction' };
+      data: { data: 'auction:abc123:room' },
+    } as Job<{ data: string }> & { name: 'close.auction' };
 
     await consumer.process(job);
 
@@ -105,7 +105,7 @@ describe('AuctionConsumer', () => {
   it('should do nothing for unknown job name', async () => {
     const job = {
       name: 'unknown.job',
-      data: 'any',
+      data: { data: 'any' },
     } as AuctionJob;
 
     await expect(consumer.process(job)).resolves.toBeUndefined();

@@ -1,5 +1,5 @@
 export type AuctionCreatedEvent = {
-  id: string;
+  auctionId: string;
   auctionName: string;
   productId: string;
   startDate: string;

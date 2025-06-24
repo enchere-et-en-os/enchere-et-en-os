@@ -9,7 +9,7 @@ import Redis from 'ioredis';
 type StartAuctionJob = Job<{ data: AuctionCreatedEvent }> & {
   name: 'start.auction';
 };
-type CloseAuctionJob = Job<string> & { name: 'close.auction' };
+type CloseAuctionJob = Job<{ data: string }> & { name: 'close.auction' };
 
 export type AuctionJob = StartAuctionJob | CloseAuctionJob;
 
@@ -26,7 +26,7 @@ export class AuctionConsumer extends WorkerHost {
   override async process(job: AuctionJob): Promise<void> {
     switch (job.name) {
       case 'start.auction': {
-        const { id, duration } = job.data.data;
+        const { auctionId, duration } = job.data.data;
 
         const dataRoom = {
           ...job.data,
@@ -42,20 +42,22 @@ export class AuctionConsumer extends WorkerHost {
           ],
         };
 
-        await this.redis.set(`auction:${id}:room`, JSON.stringify(dataRoom));
+        await this.redis.set(
+          `auction:${auctionId}:room`,
+          JSON.stringify(dataRoom),
+        );
 
         await this.jobRunnerService.closeAuction(
-          `auction:${id}:room`,
+          `auction:${auctionId}:room`,
           duration,
         );
 
         break;
       }
       case 'close.auction': {
-        await this.redis.get(job.data);
-
-        await this.redis.del(job.data);
-        this.auctionClient.emit('auction.close', { job });
+        const res = await this.redis.get(job.data.data);
+        await this.redis.del(job.data.data);
+        this.auctionClient.emit('auction.close', { res });
         break;
       }
       default: {
