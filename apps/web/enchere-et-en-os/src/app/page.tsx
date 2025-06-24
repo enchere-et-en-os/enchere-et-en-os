@@ -20,7 +20,6 @@ export default function LandingPage() {
       keycloak.current.init({onLoad: 'login-required', checkLoginIframe: false}).then(() => {
         keycloak.current.loadUserProfile().then((user) => {
             setUser(user);
-            console.log(keycloak.current.token)
         });
     }).catch(() => {
         console.log('Échec de l\'initialisation de Keycloak');

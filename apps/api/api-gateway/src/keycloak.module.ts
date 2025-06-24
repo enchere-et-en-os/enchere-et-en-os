@@ -18,8 +18,4 @@ import {
   ],
   exports: [KeycloakConnectModule],
 })
-export class KeycloakModule {
-  constructor() {
-    console.log(process.env);
-  }
-}
+export class KeycloakModule {}

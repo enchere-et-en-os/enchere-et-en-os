@@ -12,9 +12,7 @@ const logger = new Logger();
 export class UserController {
   static readonly BASE_PATTERN = 'user';
 
-  constructor(private userService: UserService) {
-    console.log('UserController');
-  }
+  constructor(private userService: UserService) {}
 
   @MessagePattern('user.create')
   createUser(@Payload() createUserDto: CreateUserDto): Observable<User> {
