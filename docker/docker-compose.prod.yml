@@ -4,7 +4,11 @@ services:
       context: ../apps/api/api-gateway
       dockerfile: ../../../docker/Dockerfile.api
     environment:
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@main-db:5432/main
+      DATABASE_HOST: main-db
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_NAME: main
       REDIS_HOST: redis
       NATS_URL: nats://nats:4222
     labels:
@@ -23,7 +27,45 @@ services:
       context: ../apps/api/auction-service
       dockerfile: ../../../docker/Dockerfile.api
     environment:
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@main-db:5432/main
+      DATABASE_HOST: main-db
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_NAME: main
+      REDIS_HOST: redis
+      NATS_URL: nats://nats:4222
+    depends_on:
+      - main-db
+      - redis
+      - nats
+
+  job-api:
+    build:
+      context: ../apps/api/job-runner
+      dockerfile: ../../../docker/Dockerfile.api
+    environment:
+      DATABASE_HOST: main-db
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_NAME: main
+      REDIS_HOST: redis
+      NATS_URL: nats://nats:4222
+    depends_on:
+      - main-db
+      - redis
+      - nats
+
+  user-api:
+    build:
+      context: ../apps/api/user-service
+      dockerfile: ../../../docker/Dockerfile.api
+    environment:
+      DATABASE_HOST: main-db
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_NAME: main
       REDIS_HOST: redis
       NATS_URL: nats://nats:4222
     depends_on:
@@ -36,7 +78,11 @@ services:
       context: ../apps/api/product-service
       dockerfile: ../../../docker/Dockerfile.api
     environment:
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@main-db:5432/main
+      DATABASE_HOST: main-db
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_NAME: main
       REDIS_HOST: redis
       NATS_URL: nats://nats:4222
     depends_on:
@@ -134,7 +180,7 @@ services:
       - "--certificatesresolvers.myresolver.acme.email=admin@enchere.mdlh.fr"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
       - "--api.dashboard=true"
-      - "--api.insecure=false"  # sécurise l'accès au dashboard (pas accessible via localhost:8080)
+      - "--api.insecure=false"
     ports:
       - "80:80"
       - "443:443"

@@ -3,11 +3,11 @@ name: CI/CD - Deploy to Production
 on:
   push:
     branches:
-      - main
+      - 38-optimize-cicd-and-deployment
 
 jobs:
-  lint-test-gateway:
-    name: Lint & Test - Gateway
+  lint-test-services:
+    name: Lint & Test - Services
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -16,56 +16,13 @@ jobs:
           node-version: 23.6.0
       - run: npm install -g pnpm
       - run: pnpm install
-      - run: pnpm --filter "api-gateway..." lint
-      - run: pnpm --filter "api-gateway..." test
-
-
-  lint-test-auction:
-    name: Lint & Test - Auction Service
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 23.6.0
-      - run: npm install -g pnpm
-      - run: pnpm install
-      - run: pnpm --filter "auction-service..." lint
-      - run: pnpm --filter "auction-service..." test
-
-  lint-test-product:
-    name: Lint & Test - Product Service
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 23.6.0
-      - run: npm install -g pnpm
-      - run: pnpm install
-      - run: pnpm --filter "product-service..." lint
-      - run: pnpm --filter "product-service..." test
-
-  lint-test-web:
-    name: Lint & Test - Web (Next.js)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 23.6.0
-      - run: npm install -g pnpm
-      - run: pnpm install
-      - run: pnpm --filter "enchere-et-en-os..." lint
-      - run: pnpm --filter "enchere-et-en-os..." test
+      - run: pnpm verify
 
   build-and-deploy:
     name: Build & Deploy to Production
     runs-on: ubuntu-latest
     needs:
-      - lint-test-auction
-      - lint-test-product
-      - lint-test-web
+      - lint-test-services
     steps:
       - uses: actions/checkout@v3
 
