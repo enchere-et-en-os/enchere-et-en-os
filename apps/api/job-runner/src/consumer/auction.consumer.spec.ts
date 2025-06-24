@@ -48,7 +48,7 @@ describe('AuctionConsumer', () => {
     }).compile();
 
     consumer = module.get(AuctionConsumer);
-    (consumer as any).jobRunnerService =
+    (consumer as { jobRunnerService: JobRunnerService }).jobRunnerService =
       mockJobRunnerService as JobRunnerService;
   });
 
