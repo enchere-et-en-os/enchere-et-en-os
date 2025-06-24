@@ -31,6 +31,32 @@ services:
       - redis
       - nats
 
+  job-api:
+    build:
+      context: ../apps/api/job-runner
+      dockerfile: ../../../docker/Dockerfile.api
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@main-db:5432/main
+      REDIS_HOST: redis
+      NATS_URL: nats://nats:4222
+    depends_on:
+      - main-db
+      - redis
+      - nats
+
+  user-api:
+    build:
+      context: ../apps/api/user-service
+      dockerfile: ../../../docker/Dockerfile.api
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@main-db:5432/main
+      REDIS_HOST: redis
+      NATS_URL: nats://nats:4222
+    depends_on:
+      - main-db
+      - redis
+      - nats
+
   product-api:
     build:
       context: ../apps/api/product-service
