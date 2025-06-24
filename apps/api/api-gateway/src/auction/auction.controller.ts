@@ -8,8 +8,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { TypedRequest } from 'interfaces/keycloak-user.interface';
 import { AuthGuard } from 'nest-keycloak-connect';
+import { TypedRequest } from 'src/interfaces/keycloak-user.interface';
 
 import { CreateAuctionDto } from './dto/create-auction';
 
