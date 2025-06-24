@@ -5,7 +5,7 @@ services:
       context: ../apps/api/api-gateway
       dockerfile: ../../../docker/Dockerfile.api
     environment:
-      DATABASE_HOST: localhost
+      DATABASE_HOST: main-db
       DATABASE_PORT: 5432
       DATABASE_USER: user
       DATABASE_PASSWORD: password
@@ -24,7 +24,7 @@ services:
       context: ../apps/api/auction-service
       dockerfile: ../../../docker/Dockerfile.api
     environment:
-      DATABASE_HOST: localhost
+      DATABASE_HOST: main-db
       DATABASE_PORT: 5432
       DATABASE_USER: user
       DATABASE_PASSWORD: password
@@ -41,7 +41,7 @@ services:
       context: ../apps/api/product-service
       dockerfile: ../../../docker/Dockerfile.api
     environment:
-      DATABASE_HOST: localhost
+      DATABASE_HOST: main-db
       DATABASE_PORT: 5432
       DATABASE_USER: user
       DATABASE_PASSWORD: password
@@ -105,8 +105,8 @@ services:
   nats:
     image: nats:2.10
     ports:
-      - "4222:4222"  # client
-      - "8222:8222"  # monitoring
+      - "4222:4222" # client
+      - "8222:8222" # monitoring
 
 volumes:
   main-db-data:
