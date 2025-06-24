@@ -1,14 +1,4 @@
-import { Controller, Logger } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
-import { delay, of } from 'rxjs';
-
-const logger = new Logger();
+import { Controller } from '@nestjs/common';
 
 @Controller()
-export class AppController {
-  @MessagePattern('ping')
-  ping() {
-    logger.log('ping');
-    return of('pong').pipe(delay(1000));
-  }
-}
+export class AppController {}

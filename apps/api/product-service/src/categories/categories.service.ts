@@ -47,10 +47,13 @@ export class CategoriesService {
     )
       throw new NotFoundException('Category parent not found');
 
-    return this.categoryRepository.update(updateCategoryDto.id, {
-      name: updateCategoryDto.name,
-      parent: { id: updateCategoryDto.parentId },
-    });
+    return this.categoryRepository.update(
+      { id: updateCategoryDto.id },
+      {
+        name: updateCategoryDto.name,
+        parent: { id: updateCategoryDto.parentId },
+      }
+    );
   }
 
   async moveProducts(fromId: string, toId: string) {

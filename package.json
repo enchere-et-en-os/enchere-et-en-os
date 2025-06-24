@@ -20,7 +20,12 @@
       "@nestjs/platform-express": "10.4.17",
       "@nestjs/cli": "10.4.9",
       "@nestjs/testing": "10.4.17",
+      "@nestjs/mapped-types": "^2.1.0",
+      "class-validator": "^0.14.2",
       "@nestjs/schematics": "10.2.3",
+      "@nestjs/cache-manager": "^3.0.1",
+      "cache-manager": "^7.0.0",
+      "class-transformer": "^0.5.1",
       "reflect-metadata": "0.1.13",
       "rxjs": "7.8.1",
       "nats": "2.29.3",
@@ -46,5 +51,5 @@
     "@enchere/eslint-config": "workspace:^",
     "@enchere/tsconfig": "workspace:^"
   },
-  "packageManager": "pnpm@10.11.0"
+  "packageManager": "pnpm@10.12.1"
 }
