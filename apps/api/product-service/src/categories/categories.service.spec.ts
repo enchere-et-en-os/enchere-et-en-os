@@ -123,10 +123,13 @@ describe('CategoriesService', () => {
 
       await service.update(dto);
 
-      expect(categoryRepo.update).toHaveBeenCalledWith('1', {
-        name: 'Updated',
-        parent: { id: '2' },
-      });
+      expect(categoryRepo.update).toHaveBeenCalledWith(
+        { id: '1' },
+        {
+          name: 'Updated',
+          parent: { id: '2' },
+        }
+      );
     });
 
     it('should throw if parent not found', async () => {

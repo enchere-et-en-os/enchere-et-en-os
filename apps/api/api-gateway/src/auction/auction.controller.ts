@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Inject,
-  Param,
   Post,
   Req,
   UseGuards,
@@ -24,8 +23,8 @@ export class AuctionController {
     return this.client.send('create-auction', { ...data, id: req.user.sub });
   }
 
-  @Get('auction/:id')
-  getAuction(@Param() parameters) {
-    return this.client.send('get-auction', parameters);
+  @Get('auction')
+  getAuction() {
+    return this.client.send('get-auction', '');
   }
 }

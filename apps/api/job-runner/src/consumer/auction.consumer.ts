@@ -3,10 +3,12 @@ import { ClientProxy } from '@nestjs/microservices';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { AuctionCreatedEvent } from '../types/auction-created-event';
-import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { JobRunnerService } from '../job-runner.service';
+import Redis from 'ioredis';
 
-type StartAuctionJob = Job<AuctionCreatedEvent> & { name: 'start.auction' };
+type StartAuctionJob = Job<{ data: AuctionCreatedEvent }> & {
+  name: 'start.auction';
+};
 type CloseAuctionJob = Job<string> & { name: 'close.auction' };
 
 export type AuctionJob = StartAuctionJob | CloseAuctionJob;
@@ -14,8 +16,8 @@ export type AuctionJob = StartAuctionJob | CloseAuctionJob;
 @Processor('auctionQueue')
 export class AuctionConsumer extends WorkerHost {
   constructor(
+    @Inject('REDIS_CLIENT') private readonly redis: Redis,
     @Inject('NATS_SERVICES') private readonly auctionClient: ClientProxy,
-    @Inject(CACHE_MANAGER) private readonly cache: Cache,
     public jobRunnerService: JobRunnerService,
   ) {
     super();
@@ -24,33 +26,35 @@ export class AuctionConsumer extends WorkerHost {
   override async process(job: AuctionJob): Promise<void> {
     switch (job.name) {
       case 'start.auction': {
-        const { auctionId, duration } = job.data;
+        const { id, duration } = job.data.data;
 
         const dataRoom = {
           ...job.data,
           endDate: new Date(
-            new Date(job.data.startDate).getTime() + job.data.duration,
+            new Date(job.data.data.startDate).getTime() +
+              job.data.data.duration,
           ),
           bids: [
             {
-              userId: job.data.userId,
-              price: job.data.startPrice,
+              userId: job.data.data.userId,
+              price: job.data.data.startPrice,
             },
           ],
         };
 
-        await this.cache.set(`auction:${auctionId}:room`, dataRoom, 0);
+        await this.redis.set(`auction:${id}:room`, JSON.stringify(dataRoom));
 
         await this.jobRunnerService.closeAuction(
-          `auction:${auctionId}:room`,
+          `auction:${id}:room`,
           duration,
         );
+
         break;
       }
       case 'close.auction': {
-        await this.cache.get(job.data);
+        await this.redis.get(job.data);
 
-        await this.cache.del(job.data);
+        await this.redis.del(job.data);
         this.auctionClient.emit('auction.close', { job });
         break;
       }

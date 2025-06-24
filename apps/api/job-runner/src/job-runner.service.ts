@@ -9,7 +9,6 @@ export class JobRunnerService {
 
   async startAuction(data: AuctionCreatedEvent, startDate: Date) {
     const delay = startDate.getTime() - Date.now();
-
     await this.auctionQueue.add('start.auction', { data }, { delay });
   }
 

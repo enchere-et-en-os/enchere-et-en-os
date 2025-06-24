@@ -2,6 +2,7 @@ import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
+import Redis from 'ioredis';
 import { Repository } from 'typeorm';
 
 import { Auction } from './auction.entity';
@@ -27,6 +28,7 @@ type AuctionRoom = {
 export class AuctionService {
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    @Inject('REDIS_CLIENT') private readonly redis: Redis,
     @Inject('NATS_SERVICES') private readonly natsClient: ClientProxy,
     @InjectRepository(Auction) private readonly auctionRepo: Repository<Auction>
   ) {}
@@ -37,8 +39,8 @@ export class AuctionService {
     return res;
   }
 
-  async getAuction(data: CreateAuctionDto) {
-    return this.cacheManager.get(`auction:${data.auctionId}:room`);
+  async getAuction() {
+    return this.redis.keys('auction:*:room');
   }
 
   async placeBid(data: {

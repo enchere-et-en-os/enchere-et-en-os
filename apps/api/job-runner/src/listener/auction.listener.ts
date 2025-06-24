@@ -14,7 +14,6 @@ export class AuctionListener {
     if (isNaN(startDate.getTime())) {
       throw new Error('Invalid Date');
     }
-
     await this.jobRunnerService.startAuction(data, startDate);
   }
 }

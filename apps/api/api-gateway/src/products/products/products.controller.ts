@@ -4,8 +4,8 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
-  Put,
   UseGuards,
 } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
@@ -27,7 +27,7 @@ export class ProductController {
     return this.productService.send('create_product', body);
   }
 
-  @Put(':id')
+  @Patch(':id')
   async update(@Param('id') id: string, @Body() body: UpdateProductDto) {
     return this.productService.send('update_product', {
       id,

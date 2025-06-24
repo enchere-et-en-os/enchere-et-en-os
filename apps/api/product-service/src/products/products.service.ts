@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { Category } from '../categories/entities/category.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
@@ -10,10 +11,19 @@ import { Product } from './entities/product.entity';
 export class ProductService {
   constructor(
     @InjectRepository(Product)
-    private readonly productRepo: Repository<Product>
+    private readonly productRepo: Repository<Product>,
+    @InjectRepository(Category)
+    private readonly categoryRepo: Repository<Category>
   ) {}
 
   async create(dto: CreateProductDto) {
+    if (
+      !(await this.categoryRepo.findOneBy({
+        id: dto.categoryId,
+      }))
+    )
+      throw new NotFoundException('Category not found');
+
     return this.productRepo.save(dto);
   }
 
@@ -21,7 +31,19 @@ export class ProductService {
     const product = await this.productRepo.findOneBy({ id });
     if (!product) throw new NotFoundException('Product not found');
 
-    const updated = this.productRepo.merge(product, dto);
+    if (
+      !(await this.categoryRepo.findOneBy({
+        id: dto.categoryId,
+      }))
+    )
+      throw new NotFoundException('Category not found');
+
+    const updated = this.productRepo.merge(product, {
+      ...dto,
+      category: {
+        id: dto.categoryId,
+      },
+    });
     return this.productRepo.save(updated);
   }
 

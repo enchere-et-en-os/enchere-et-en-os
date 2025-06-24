@@ -5,18 +5,14 @@ import { AuctionConsumer } from './consumer/auction.consumer';
 import { AuctionListener } from './listener/auction.listener';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import * as process from 'node:process';
-import { CacheModule } from '@nestjs/cache-manager';
+import { RedisClientProvider } from './redis.provider';
 
 @Module({
   imports: [
-    CacheModule.register(),
     BullModule.registerQueue({
       name: 'auctionQueue',
       connection: {
-        host: process.env.BULL_HOST,
-        port: process.env.BULL_PORT
-          ? parseInt(process.env.BULL_PORT, 10)
-          : 6379,
+        url: 'redis://localhost:6379',
       },
     }),
     ClientsModule.register([
@@ -30,6 +26,11 @@ import { CacheModule } from '@nestjs/cache-manager';
     ]),
   ],
   controllers: [AuctionListener],
-  providers: [JobRunnerService, AuctionConsumer, AuctionListener],
+  providers: [
+    RedisClientProvider,
+    JobRunnerService,
+    AuctionConsumer,
+    AuctionListener,
+  ],
 })
 export class JobRunnerModule {}
