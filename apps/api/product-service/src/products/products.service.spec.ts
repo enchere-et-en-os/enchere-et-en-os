@@ -130,4 +130,33 @@ describe('ProductService', () => {
       NotFoundException
     );
   });
+
+  it('should throw when creating product with non-existent category', async () => {
+    const dto: CreateProductDto = {
+      name: exampleProduct.name,
+      description: exampleProduct.description,
+      images: exampleProduct.images,
+      categoryId: 'invalid-category-id',
+    };
+
+    mockCategoryRepo.findOneBy.mockResolvedValue(null);
+
+    await expect(() => service.create(dto)).rejects.toThrow(NotFoundException);
+    expect(mockProductRepo.save).not.toHaveBeenCalled();
+  });
+
+  it('should throw when updating product with non-existent category', async () => {
+    const updateDto: UpdateProductDto = {
+      name: 'Updated Product Name',
+      categoryId: 'invalid-category-id',
+    };
+
+    mockProductRepo.findOneBy.mockResolvedValue(exampleProduct);
+    mockCategoryRepo.findOneBy.mockResolvedValue(null);
+
+    await expect(() =>
+      service.update(exampleProduct.id, updateDto)
+    ).rejects.toThrow(NotFoundException);
+    expect(mockProductRepo.save).not.toHaveBeenCalled();
+  });
 });

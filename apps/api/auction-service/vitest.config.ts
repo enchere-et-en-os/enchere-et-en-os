@@ -9,14 +9,17 @@ export default defineConfig({
         '*.config.*', // ignore les fichiers config
         'test/**/*.e2e-spec.ts', // ignore les fichiers de test-e2e
         'src/main.ts', // ignore le bootstrap
-        'src/job-runner.service.ts', // ignore le fichier, car appel de fonction uniquement
         'src/types/**/*', // ignore les types
+        'src/**/*.controller.ts', // ignore les controller
+        '**/*.interface.ts', // ignore les controller
         'src/**/*.spec.ts', // ignore les fichiers de test
         'src/**/*.module.ts', // ignore les fichiers module
+        'src/**/*.listener.*', // ignore tous les listener
         'src/**/*.provider.*', // ignore tous les listener
         'src/**/dto/*.ts', // ignore tous les DTOs
         'src/**/mocks/**', // ignore tous les mocks
-        'dist/**/*', //ignore le dist
+        'dist/**/*', // ignore tous les mocks
+        'src/app.service.ts', // ignore tous les mocks
       ],
     },
   },
