@@ -5,8 +5,13 @@ services:
       context: ../apps/api/api-gateway
       dockerfile: ../../../docker/Dockerfile.api
     environment:
-      DATABASE_URL: postgres://user:password@main-db:5432/main
+      DATABASE_HOST: main-db
+      DATABASE_PORT: 5432
+      DATABASE_USER: user
+      DATABASE_PASSWORD: password
+      DATABASE_NAME: main
       REDIS_HOST: redis
+      KC_HOST: http://0.0.0.0:8080
       NATS_URL: nats://nats:4222
     depends_on:
       - main-db
@@ -20,7 +25,11 @@ services:
       context: ../apps/api/auction-service
       dockerfile: ../../../docker/Dockerfile.api
     environment:
-      DATABASE_URL: postgres://user:password@main-db:5432/main
+      DATABASE_HOST: main-db
+      DATABASE_PORT: 5432
+      DATABASE_USER: user
+      DATABASE_PASSWORD: password
+      DATABASE_NAME: main
       REDIS_HOST: redis
       NATS_URL: nats://nats:4222
     depends_on:
@@ -33,7 +42,11 @@ services:
       context: ../apps/api/product-service
       dockerfile: ../../../docker/Dockerfile.api
     environment:
-      DATABASE_URL: postgres://user:password@main-db:5432/main
+      DATABASE_HOST: main-db
+      DATABASE_PORT: 5432
+      DATABASE_USER: user
+      DATABASE_PASSWORD: password
+      DATABASE_NAME: main
       REDIS_HOST: redis
       NATS_URL: nats://nats:4222
     depends_on:
@@ -70,6 +83,7 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: localhost
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
       KC_DB_USERNAME: user
@@ -93,8 +107,8 @@ services:
   nats:
     image: nats:2.10
     ports:
-      - "4222:4222"  # client
-      - "8222:8222"  # monitoring
+      - "4222:4222" # client
+      - "8222:8222" # monitoring
 
 volumes:
   main-db-data:
