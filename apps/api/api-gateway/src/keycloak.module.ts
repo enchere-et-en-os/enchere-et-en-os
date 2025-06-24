@@ -8,7 +8,7 @@ import {
 @Module({
   imports: [
     KeycloakConnectModule.register({
-      authServerUrl: 'http://localhost:8080',
+      authServerUrl: process.env.KC_HOST ?? 'http://localhost:8080',
       realm: 'enchere',
       clientId: 'front',
       secret: 'unused',
@@ -18,4 +18,8 @@ import {
   ],
   exports: [KeycloakConnectModule],
 })
-export class KeycloakModule {}
+export class KeycloakModule {
+  constructor() {
+    console.log(process.env);
+  }
+}
