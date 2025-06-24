@@ -126,8 +126,8 @@ services:
   traefik:
     image: traefik:v3.0
     command:
-      - "--entrypoints.web.address=:8080"
-      - "--entrypoints.websecure.address=:8443"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
       - "--providers.docker=true"
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
@@ -136,8 +136,9 @@ services:
       - "--api.dashboard=true"
       - "--api.insecure=false"
     ports:
-      - "8082:8080"
-      - "8443:8443"
+      - "80:80"
+      - "443:443"
+      - "8081:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./letsencrypt:/letsencrypt
