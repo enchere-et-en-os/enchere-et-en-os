@@ -14,7 +14,7 @@ import { RedisClientProvider } from './redis.provider';
     NatsClientModule,
     CacheModule.register({
       store: redisStore,
-      url: 'redis://localhost:6379',
+      url: process.env.REDIS_HOST,
       ttl: 60,
     }),
     TypeOrmModule.forFeature([Auction]),

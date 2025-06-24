@@ -1,5 +1,6 @@
 import type { Cache } from '@nestjs/cache-manager';
 import type { ClientProxy } from '@nestjs/microservices';
+import type Redis from 'ioredis';
 import type { Repository } from 'typeorm';
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -26,9 +27,15 @@ describe('AuctionService', () => {
     save: vi.fn(),
   } as unknown as Repository<Auction>;
 
+  const redis = {
+    keys: vi.fn(),
+    get: vi.fn(),
+    del: vi.fn(),
+  } as unknown as Redis;
+
   beforeEach(() => {
     vi.clearAllMocks();
-    service = new AuctionService(cacheManager, natsClient, auctionRepo);
+    service = new AuctionService(cacheManager, redis, natsClient, auctionRepo);
   });
 
   it('should be defined', () => {
@@ -64,17 +71,13 @@ describe('AuctionService', () => {
   });
 
   describe('getAuction', () => {
-    it('should get auction from cache', async () => {
-      const dto = { auctionId: '1' } as CreateAuctionDto;
-
-      (cacheManager.get as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
-        'auction-data'
-      );
-
-      const result = await service.getAuction(dto);
-
-      expect(cacheManager.get).toHaveBeenCalledWith('auction:1:room');
-      expect(result).toBe('auction-data');
+    it('should get keys from Redis', async () => {
+      (redis.keys as ReturnType<typeof vi.fn>).mockResolvedValueOnce([
+        'auction:1:room',
+      ]);
+      const result = await service.getAuction();
+      expect(redis.keys).toHaveBeenCalledWith('auction:*:room');
+      expect(result).toEqual(['auction:1:room']);
     });
   });
 

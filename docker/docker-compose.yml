@@ -7,8 +7,8 @@ services:
     environment:
       DATABASE_HOST: main-db
       DATABASE_PORT: 5432
-      DATABASE_USER: ${POSTGRES_USER}
-      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_USER: user
+      DATABASE_PASSWORD: password
       DATABASE_NAME: main
       REDIS_HOST: redis
       NATS_URL: nats://nats:4222
@@ -26,8 +26,8 @@ services:
     environment:
       DATABASE_HOST: main-db
       DATABASE_PORT: 5432
-      DATABASE_USER: ${POSTGRES_USER}
-      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_USER: user
+      DATABASE_PASSWORD: password
       DATABASE_NAME: main
       REDIS_HOST: redis
       NATS_URL: nats://nats:4222
@@ -43,8 +43,8 @@ services:
     environment:
       DATABASE_HOST: main-db
       DATABASE_PORT: 5432
-      DATABASE_USER: ${POSTGRES_USER}
-      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_USER: user
+      DATABASE_PASSWORD: password
       DATABASE_NAME: main
       REDIS_HOST: redis
       NATS_URL: nats://nats:4222
@@ -105,8 +105,8 @@ services:
   nats:
     image: nats:2.10
     ports:
-      - "4222:4222"  # client
-      - "8222:8222"  # monitoring
+      - "4222:4222" # client
+      - "8222:8222" # monitoring
 
 volumes:
   main-db-data:
