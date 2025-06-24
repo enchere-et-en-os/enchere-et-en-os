@@ -86,7 +86,6 @@ export default function Dashboard() {
       duration: Number.parseInt(newRoom.duration),
     }
 
-    console.log("Creating room:", roomData)
     // Simulation d'ajout
     const newRoomData: AuctionRoom = {
       id: Date.now().toString(),
