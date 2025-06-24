@@ -35,7 +35,7 @@ export class AuctionService {
 
   async createAuction(data: CreateAuctionDto) {
     const res = await this.auctionRepo.save({ ...data, sellerId: data.id });
-    this.natsClient.emit('auction.created', data);
+    this.natsClient.emit('auction.created', res);
     return res;
   }
 
