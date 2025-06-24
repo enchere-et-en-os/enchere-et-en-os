@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Gavel, Users, Trophy, Clock } from "lucide-react"
 import Keycloak, {KeycloakProfile} from 'keycloak-js';
-import {useEffect, useRef, useState} from "react";
+import {useRef, useState} from "react";
 
 export default function LandingPage() {
     const keycloak = useRef<Keycloak>(new Keycloak({
@@ -58,8 +58,8 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-5xl font-bold text-gray-900 mb-6">Participez aux enchères en temps réel</h2>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Créez ou rejoignez des salles d'enchères, placez vos offres et suivez les résultats en direct. Une
-            expérience d'enchères moderne et sécurisée.
+            Créez ou rejoignez des salles d&apos;enchères, placez vos offres et suivez les résultats en direct. Une
+            expérience d&apos;enchères moderne et sécurisée.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/dashboard">
@@ -81,7 +81,7 @@ export default function LandingPage() {
             <CardHeader>
               <Users className="h-12 w-12 text-indigo-600 mx-auto mb-4" />
               <CardTitle>Salles collaboratives</CardTitle>
-              <CardDescription>Créez ou rejoignez des salles d'enchères avec d'autres participants</CardDescription>
+              <CardDescription>Créez ou rejoignez des salles d&apos;enchères avec d&apos;autres participants</CardDescription>
             </CardHeader>
           </Card>
 
