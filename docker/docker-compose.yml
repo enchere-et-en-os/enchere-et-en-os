@@ -5,7 +5,11 @@ services:
       context: ../apps/api/api-gateway
       dockerfile: ../../../docker/Dockerfile.api
     environment:
-      DATABASE_URL: postgres://user:password@main-db:5432/main
+      DATABASE_HOST: main-db
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_NAME: main
       REDIS_HOST: redis
       NATS_URL: nats://nats:4222
     depends_on:
@@ -20,7 +24,11 @@ services:
       context: ../apps/api/auction-service
       dockerfile: ../../../docker/Dockerfile.api
     environment:
-      DATABASE_URL: postgres://user:password@main-db:5432/main
+      DATABASE_HOST: main-db
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_NAME: main
       REDIS_HOST: redis
       NATS_URL: nats://nats:4222
     depends_on:
@@ -33,7 +41,11 @@ services:
       context: ../apps/api/product-service
       dockerfile: ../../../docker/Dockerfile.api
     environment:
-      DATABASE_URL: postgres://user:password@main-db:5432/main
+      DATABASE_HOST: main-db
+      DATABASE_PORT: 5432
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_NAME: main
       REDIS_HOST: redis
       NATS_URL: nats://nats:4222
     depends_on:
