@@ -12,7 +12,7 @@ import { RedisClientProvider } from './redis.provider';
     BullModule.registerQueue({
       name: 'auctionQueue',
       connection: {
-        url: 'redis://localhost:6379',
+        url: process.env.REDIS_HOST,
       },
     }),
     ClientsModule.register([
