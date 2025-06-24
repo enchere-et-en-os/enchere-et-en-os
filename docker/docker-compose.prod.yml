@@ -26,7 +26,6 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@main-db:5432/main
       REDIS_HOST: redis
       NATS_URL: nats://nats:4222
-    command: node dist/apps/api/auction-service/main
     depends_on:
       - main-db
       - redis
@@ -40,7 +39,6 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@main-db:5432/main
       REDIS_HOST: redis
       NATS_URL: nats://nats:4222
-    command: node dist/apps/api/job-runner/main
     depends_on:
       - main-db
       - redis
@@ -54,7 +52,6 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@main-db:5432/main
       REDIS_HOST: redis
       NATS_URL: nats://nats:4222
-    command: node dist/apps/api/user-service/main
     depends_on:
       - main-db
       - redis
@@ -68,7 +65,6 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@main-db:5432/main
       REDIS_HOST: redis
       NATS_URL: nats://nats:4222
-    command: node dist/apps/api/product-service/main
     depends_on:
       - main-db
       - redis
